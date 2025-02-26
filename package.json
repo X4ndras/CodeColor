@@ -1,0 +1,29 @@
+{
+  "name": "neovim-theme-creator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tsconfig/svelte": "^5.0.4",
+    "svelte": "^4.2.19",
+    "svelte-check": "^3.8.6",
+    "tslib": "^2.7.0",
+    "typescript": "^5.5.3",
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "@smui/button": "^7.0.0-beta.18",
+    "@smui/card": "^7.0.0-beta.18",
+    "@smui/switch": "^7.0.0-beta.18",
+    "@smui/textfield": "^7.0.0-beta.18",
+    "highlight.js": "^11.9.0",
+    "svelte-material-ui": "^7.0.0-beta.18"
+  }
+}
