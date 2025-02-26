@@ -66,7 +66,7 @@
   }
 
   .terminal-header {
-    background-color: #2d2d2d;
+    background-color: #181818;
     padding: 0.5rem;
     display: flex;
     align-items: center;

@@ -12,24 +12,27 @@
 
 <div class="color-picker">
   <div class="color-input">
-    <div class="color-preview" style="background-color: {value}"></div>
-    <Textfield
-      class="text-field"
-      label={label}
-      type="text"
-      bind:value
-    />
     <input
       type="color"
       {value}
       on:input={handleInput}
     />
+    <div class="textfield">
+      <label>{label}</label>
+      <input type="text" bind:value />
+    </div>
   </div>
 </div>
 
 <style>
   .color-picker {
     width: 100%;
+  }
+
+  .textfield {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
   }
   
   .color-input {
@@ -50,11 +53,12 @@
   }
   
   input[type="color"] {
+    all: unset;
     width: 2.5rem;
-    height: 2rem;
+    height: 2.8rem;
     padding: 0;
     border: none;
-    border-radius: 4px;
+    border-radius: 0px;
     cursor: pointer;
   }
 
@@ -69,8 +73,8 @@
     }
 
     input[type="color"] {
-      width: 2rem;
-      height: 1.5rem;
+      width: 2.0rem;
+      height: 2.3rem;
     }
   }
 </style>

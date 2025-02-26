@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code:Colokj</title>
+    <title>Code:Color</title>
     <script>
-      // Pre-hydrate theme
+      // Pre-hydrate theme - make sure this runs before any components
       (function() {
-        const dark = localStorage.getItem('darkMode') === 'true';
-        const theme = dark ? 'dark' : 'light';
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        const theme = darkMode ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.classList.add(theme);
+        document.documentElement.className = theme;
+        document.body && (document.body.className = theme);
       })();
     </script>
   </head>

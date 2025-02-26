@@ -1,61 +1,92 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import Card from '@smui/card';
-  import Switch from '@smui/switch';
-  import ColorPicker from './lib/ColorPicker.svelte';
-  import CodePreview from './lib/CodePreview.svelte';
-  import TerminalPreview from './lib/TerminalPreview.svelte';
-
-  onMount(() => {
-    const storedDark = localStorage.getItem('darkMode');
-    if (storedDark !== null) {
-      darkMode = storedDark === 'true';
-    }
-  });
+  import { onMount } from "svelte";
+  import Card from "@smui/card";
+  import Switch from "@smui/switch";
+  import ColorPicker from "./lib/ColorPicker.svelte";
+  import CodePreview from "./lib/CodePreview.svelte";
+  import TerminalPreview from "./lib/TerminalPreview.svelte";
 
   let darkMode = true;
   let showSidebar = true;
+  let mounted = false;
 
   let colors = {
-    base: '#FFFFFF',
-    color0: '#000000',
-    color1: '#FF0000',
-    color2: '#00FF00',
-    color3: '#FFFF00',
-    color4: '#0000FF',
-    color5: '#FF00FF',
-    color6: '#00FFFF',
-    surface: '#1E1E1E',
-    color7: '#C0C0C0',
-    color8: '#808080',
-    color9: '#FF8080',
-    color10: '#80FF80',
-    color11: '#FFFF80',
-    color12: '#8080FF',
-    color13: '#FF80FF'
+    base: "#FFFFFF",
+    color0: "#000000",
+    color1: "#FF0000",
+    color2: "#00FF00",
+    color3: "#FFFF00",
+    color4: "#0000FF",
+    color5: "#FF00FF",
+    color6: "#00FFFF",
+    surface: "#1E1E1E",
+    color7: "#C0C0C0",
+    color8: "#808080",
+    color9: "#FF8080",
+    color10: "#80FF80",
+    color11: "#FFFF80",
+    color12: "#8080FF",
+    color13: "#FF80FF",
   };
 
-  // Persist dark mode changes
-  $: localStorage.setItem('darkMode', `${darkMode}`);
+  onMount(() => {
+    // Read from localStorage on component mount
+    const storedDark = localStorage.getItem("darkMode");
+    if (storedDark !== null) {
+      darkMode = storedDark === "true";
+    }
+    mounted = true;
+    applyTheme();
+  });
 
-  // Update document classes so CSS custom properties work
-  $: {
-    const theme = darkMode ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-    //document.documentElement.classList.toggle('dark', darkMode);
-    //document.documentElement.classList.toggle('light', !darkMode);
+  function applyTheme() {
+    if (!mounted) return;
+    
+    const theme = darkMode ? "dark" : "light";
+    
+    // Apply to HTML element
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.className = theme;
+    
+    // Ensure body also has the theme class
+    document.body.className = theme;
+  }
+
+  function toggleTheme() {
+  console.log(`Toggle Theme called: `);
+    darkMode = !darkMode;
+    const theme = darkMode ? "dark" : "light";
+    
+    // Save to localStorage
+    localStorage.setItem("darkMode", darkMode.toString());
+    
+    // Apply theme directly to document
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.className = theme;
+    document.body.className = theme;
+    
+    console.log("Theme switched to:", theme);
+  }
+
+  // Watch for darkMode changes
+  $: if (mounted) {
+    localStorage.setItem("darkMode", darkMode.toString());
+    applyTheme();
   }
 </script>
 
-<main class="theme-{darkMode ? 'dark' : 'light'}">
+<main>
   <div class="header">
-    <h1>Neovim Theme Creator</h1>
+    <h1>Code:Color</h1>
     <div class="theme-switch">
       <span>🌞</span>
-      <button class="toggle-sidebar" on:click={() => showSidebar = !showSidebar}>
-        {showSidebar ? '✕' : '☰'}
+      <button
+        class="toggle-sidebar"
+        on:click={() => (showSidebar = !showSidebar)}
+      >
+        {showSidebar ? "✕" : "☰"}
       </button>
-      <Switch bind:checked={darkMode} />
+      <Switch on:click={toggleTheme} bind:checked={darkMode} />
       <span>🌙</span>
     </div>
   </div>
@@ -103,35 +134,6 @@
 </main>
 
 <style>
-  :global(:root) {
-    --text-color: #213547;
-    --bg-color: #ffffff;
-    --border-color: #ccc;
-    --card-bg: #ffffff;
-    --sidebar-width: 320px;
-  }
-
-  :global([data-theme="dark"]) {
-    --text-color: #ffffff;
-    --bg-color: #1a1a1a;
-    --border-color: #444;
-    --card-bg: #2d2d2d;
-  }
-
-  :global(body) {
-    margin: 0;
-    padding: 1rem;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color 0.3s, color 0.3s;
-  }
-
-  :global(.mdc-card) {
-    background-color: var(--card-bg) !important;
-    color: var(--text-color) !important;
-    border-radius: 16px;
-  }
-
   .header {
     display: flex;
     align-items: center;
@@ -139,7 +141,8 @@
     gap: 2rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
-    padding-right: var(--sidebar-width);
+    padding-left: var(--sidebar-width);
+    position: relative;
   }
 
   .theme-switch {
@@ -147,14 +150,16 @@
     align-items: center;
     gap: 0.5rem;
   }
-.layout {
-  display: flex;
-  gap: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-  padding-left: var(--sidebar-width);
-}
+
+  .layout {
+    display: flex;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 28px;
+    position: relative;
+    padding-left: var(--sidebar-width);
+    min-height: 100vh;
+  }
 
   h1 {
     text-align: center;
@@ -162,7 +167,7 @@
     margin: 0;
     font-size: 1.5rem;
   }
-
+  
   .sidebar {
     width: var(--sidebar-width);
     position: fixed;
@@ -175,29 +180,30 @@
     transition: transform 0.3s ease;
     z-index: 100;
     transform: translateX(0);
+    height: 100vh;
   }
 
   .sidebar-hidden {
     transform: translateX(-100%);
   }
 
-.toggle-sidebar {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 101;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  color: var(--text-color);
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
+  .toggle-sidebar {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 101;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
 
   .preview-section {
     flex: 1;
@@ -223,13 +229,9 @@
     margin-bottom: 1rem;
   }
 
-    @media (max-width: 1024px) {
-    :global(body) {
-      padding: 0.5rem;
-    }
-
+  @media (max-width: 1024px) {
     .header {
-      padding-right: 0;
+      padding-left: 0;
       margin-bottom: 0.5rem;
     }
 
@@ -248,12 +250,11 @@
     .sidebar {
       width: 100%;
       max-width: 320px;
+      height: auto;
     }
 
     .layout {
       padding-left: 0;
     }
   }
-
 </style>
-

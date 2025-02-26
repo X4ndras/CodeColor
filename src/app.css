@@ -1,36 +1,63 @@
 :root {
+  --sidebar-width: 320px;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: #213547;
-  background-color: #ffffff;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
 
-.dark {
-  --text-color: #ffffff;
-  --bg-color: #1a1a1a;
-  --border-color: #444;
-  --card-bg: #2d2d2d;
-}
-
-.light {
+  /* Light theme (default) */
   --text-color: #213547;
   --bg-color: #ffffff;
   --border-color: #ccc;
   --card-bg: #ffffff;
+  color-scheme: light;
+}
+
+/* Use both class and attribute selectors for maximum compatibility */
+.dark, 
+[data-theme="dark"],
+html.dark,
+html[data-theme="dark"] {
+  --text-color: #ffffff;
+  --bg-color: #1a1a1a;
+  --border-color: #444;
+  --card-bg: #2d2d2d;
+  color-scheme: dark;
+}
+
+.light, 
+[data-theme="light"],
+html.light,
+html[data-theme="light"] {
+  --text-color: #213547;
+  --bg-color: #ffffff;
+  --border-color: #ccc;
+  --card-bg: #ffffff;
+  color-scheme: light;
 }
 
 body {
   margin: 0;
+  padding: 1rem;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+body.light {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #app {
@@ -38,7 +65,20 @@ body {
   margin: 0 auto;
 }
 
+/* Material UI Card overrides */
+.mdc-card {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-radius: 16px;
+}
+
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+}
+
+@media (max-width: 1024px) {
+  body {
+    padding: 0.5rem;
+  }
 }
