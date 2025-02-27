@@ -53,19 +53,18 @@
   }
 
   function toggleTheme() {
-  console.log(`Toggle Theme called: `);
+    console.log(`Toggle Theme called`);
     darkMode = !darkMode;
     const theme = darkMode ? "dark" : "light";
     
-    // Save to localStorage
-    localStorage.setItem("darkMode", darkMode.toString());
     
     // Apply theme directly to document
+    localStorage.setItem("darkMode", darkMode.toString());
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.className = theme;
     document.body.className = theme;
     
-    console.log("Theme switched to:", theme);
+    console.log("Theme switched to:", theme, darkMode);
   }
 
   // Watch for darkMode changes
@@ -86,7 +85,7 @@
       >
         {showSidebar ? "✕" : "☰"}
       </button>
-      <Switch on:click={toggleTheme} bind:checked={darkMode} />
+      <Switch onSMUISwitchChange={() => toggleTheme} bind:checked={darkMode} />
       <span>🌙</span>
     </div>
   </div>
@@ -213,6 +212,7 @@
   }
 
   .color-pickers {
+    margin-bottom: 2rem;
     padding: 1rem;
     display: flex;
     flex-direction: column;
