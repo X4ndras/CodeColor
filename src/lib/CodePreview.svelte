@@ -1,27 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import hljs from 'highlight.js/lib/core';
-  import javascript from 'highlight.js/lib/languages/javascript';
-  import 'highlight.js/styles/github-dark.css';
+  import { onMount } from "svelte";
+  import hljs from "highlight.js/lib/core";
+  import javascript from "highlight.js/lib/languages/javascript";
+  import "highlight.js/styles/github-dark.css";
+  import type { theme } from "../Types.svelte";
 
-  export let colors: {
-    base: string;
-    color0: string;
-    color1: string;
-    color2: string;
-    color3: string;
-    color4: string;
-    color5: string;
-    color6: string;
-    surface: string;
-    color7: string;
-    color8: string;
-    color9: string;
-    color10: string;
-    color11: string;
-    color12: string;
-    color13: string;
-  };
+  // fields
+  export let colors: theme;
 
   const codeSnippet = `// Modules and advanced JavaScript features
 import { EventEmitter } from 'events';
@@ -130,12 +115,15 @@ main();`;
   let highlighted: string;
 
   onMount(() => {
-    hljs.registerLanguage('javascript', javascript);
-    highlighted = hljs.highlight(codeSnippet, { language: 'javascript' }).value;
+    hljs.registerLanguage("javascript", javascript);
+    highlighted = hljs.highlight(codeSnippet, { language: "javascript" }).value;
   });
 </script>
 
-<div class="code-preview" style="--base: {colors.base}; --surface: {colors.surface};">
+<div
+  class="code-preview"
+  style="--base: {colors.text}; --surface: {colors.background};"
+>
   <pre><code>{@html highlighted || codeSnippet}</code></pre>
 </div>
 
@@ -145,7 +133,7 @@ main();`;
     padding: 1rem;
     border-radius: 8px;
     overflow: auto;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "JetBrains Mono", monospace;
     font-size: 14px;
     line-height: 1.5;
     max-height: 600px;
@@ -160,3 +148,4 @@ main();`;
     color: var(--base) !important;
   }
 </style>
+

@@ -1,25 +1,13 @@
 <script lang="ts">
-  export let colors: {
-    base: string;
-    color0: string;
-    color1: string;
-    color2: string;
-    color3: string;
-    color4: string;
-    color5: string;
-    color6: string;
-    surface: string;
-    color7: string;
-    color8: string;
-    color9: string;
-    color10: string;
-    color11: string;
-    color12: string;
-    color13: string;
-  };
+  import type { theme } from "../Types.svelte";
+
+  export let colors: theme;
 </script>
 
-<div class="terminal" style="--surface: {colors.surface}; --base: {colors.base};">
+<div
+  class="terminal"
+  style="--surface: {colors.background}; --base: {colors.text};"
+>
   <div class="terminal-header">
     <div class="terminal-buttons">
       <span></span>
@@ -31,26 +19,54 @@
   <div class="terminal-content">
     <div class="color-grid">
       <div class="color-row">
-        <div class="color-cell" style="background-color: {colors.color0}">Color 0</div>
-        <div class="color-cell" style="background-color: {colors.color1}">Color 1</div>
-        <div class="color-cell" style="background-color: {colors.color2}">Color 2</div>
-        <div class="color-cell" style="background-color: {colors.color3}">Color 3</div>
+        <div class="color-cell" style="background-color: {colors.color0}">
+          Color 0
+        </div>
+        <div class="color-cell" style="background-color: {colors.color1}">
+          Color 1
+        </div>
+        <div class="color-cell" style="background-color: {colors.color2}">
+          Color 2
+        </div>
+        <div class="color-cell" style="background-color: {colors.color3}">
+          Color 3
+        </div>
       </div>
       <div class="color-row">
-        <div class="color-cell" style="background-color: {colors.color4}">Color 4</div>
-        <div class="color-cell" style="background-color: {colors.color5}">Color 5</div>
-        <div class="color-cell" style="background-color: {colors.color6}">Color 6</div>
-        <div class="color-cell" style="background-color: {colors.color7}">Color 7</div>
+        <div class="color-cell" style="background-color: {colors.color4}">
+          Color 4
+        </div>
+        <div class="color-cell" style="background-color: {colors.color5}">
+          Color 5
+        </div>
+        <div class="color-cell" style="background-color: {colors.color6}">
+          Color 6
+        </div>
+        <div class="color-cell" style="background-color: {colors.color7}">
+          Color 7
+        </div>
       </div>
       <div class="color-row">
-        <div class="color-cell" style="background-color: {colors.color8}">Color 8</div>
-        <div class="color-cell" style="background-color: {colors.color9}">Color 9</div>
-        <div class="color-cell" style="background-color: {colors.color10}">Color 10</div>
-        <div class="color-cell" style="background-color: {colors.color11}">Color 11</div>
+        <div class="color-cell" style="background-color: {colors.color8}">
+          Color 8
+        </div>
+        <div class="color-cell" style="background-color: {colors.color9}">
+          Color 9
+        </div>
+        <div class="color-cell" style="background-color: {colors.color10}">
+          Color 10
+        </div>
+        <div class="color-cell" style="background-color: {colors.color11}">
+          Color 11
+        </div>
       </div>
       <div class="color-row">
-        <div class="color-cell" style="background-color: {colors.color12}">Color 12</div>
-        <div class="color-cell" style="background-color: {colors.color13}">Color 13</div>
+        <div class="color-cell" style="background-color: {colors.color12}">
+          Color 12
+        </div>
+        <div class="color-cell" style="background-color: {colors.color13}">
+          Color 13
+        </div>
       </div>
     </div>
   </div>
@@ -121,7 +137,7 @@
     align-items: center;
     justify-content: center;
     color: var(--base);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: "JetBrains Mono", monospace;
     font-size: 0.8rem;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }

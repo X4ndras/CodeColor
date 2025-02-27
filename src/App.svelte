@@ -5,28 +5,39 @@
   import ColorPicker from "./lib/ColorPicker.svelte";
   import CodePreview from "./lib/CodePreview.svelte";
   import TerminalPreview from "./lib/TerminalPreview.svelte";
+  import ExportPopup from "./lib/ExportPopup.svelte";
+  import type { theme } from "./Types.svelte";
 
   let darkMode = true;
   let showSidebar = true;
   let mounted = false;
 
-  let colors = {
-    base: "#FFFFFF",
-    color0: "#000000",
-    color1: "#FF0000",
-    color2: "#00FF00",
-    color3: "#FFFF00",
-    color4: "#0000FF",
-    color5: "#FF00FF",
-    color6: "#00FFFF",
-    surface: "#1E1E1E",
-    color7: "#C0C0C0",
-    color8: "#808080",
-    color9: "#FF8080",
-    color10: "#80FF80",
-    color11: "#FFFF80",
-    color12: "#8080FF",
-    color13: "#FF80FF",
+  let colors: theme = {
+    /* Base Background Color (usually default background) */
+    background: "#1E1E1E",
+
+    /* Base Foreground Color (usually text color) */
+    text: "#FFFFFF",
+
+    /* ANSI Colors 0 to 7 (Standard Colors) */
+    color0: "#000000", // Black
+    color1: "#FF0000", // Red
+    color2: "#00FF00", // Green
+    color3: "#FFFF00", // Yellow
+    color4: "#0000FF", // Blue
+    color5: "#FF00FF", // Magenta
+    color6: "#00FFFF", // Cyan
+    color7: "#C0C0C0", // White (actually light gray)
+
+    /* ANSI Colors 8 to 15 (Bright Colors) */
+    color8: "#808080", // Bright Black (actually dark gray)
+    color9: "#FF8080", // Bright Red
+    color10: "#80FF80", // Bright Green
+    color11: "#FFFF80", // Bright Yellow
+    color12: "#8080FF", // Bright Blue
+    color13: "#FF80FF", // Bright Magenta
+    color14: "#00FFFF", // Bright Cyan
+    color15: "#FFFFFF", // Bright White
   };
 
   onMount(() => {
@@ -41,13 +52,13 @@
 
   function applyTheme() {
     if (!mounted) return;
-    
+
     const theme = darkMode ? "dark" : "light";
-    
+
     // Apply to HTML element
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.className = theme;
-    
+
     // Ensure body also has the theme class
     document.body.className = theme;
   }
@@ -56,14 +67,12 @@
     console.log(`Toggle Theme called`);
     darkMode = !darkMode;
     const theme = darkMode ? "dark" : "light";
-    
-    
+
     // Apply theme directly to document
     localStorage.setItem("darkMode", darkMode.toString());
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.className = theme;
-    document.body.className = theme;
-    
+    document.body.className = theme;    
     console.log("Theme switched to:", theme, darkMode);
   }
 
@@ -77,16 +86,19 @@
 <main>
   <div class="header">
     <h1>Code:Color</h1>
-    <div class="theme-switch">
-      <span>🌞</span>
-      <button
-        class="toggle-sidebar"
-        on:click={() => (showSidebar = !showSidebar)}
-      >
-        {showSidebar ? "✕" : "☰"}
-      </button>
-      <Switch onSMUISwitchChange={() => toggleTheme} bind:checked={darkMode} />
-      <span>🌙</span>
+    <div class="header-controls">
+      <div class="theme-switch">
+        <span>🌞</span>
+        <button
+          class="toggle-sidebar"
+          on:click={() => (showSidebar = !showSidebar)}
+        >
+          {showSidebar ? "✕" : "☰"}
+        </button>
+        <Switch on:click={toggleTheme} bind:checked={darkMode} />
+        <span>🌙</span>
+      </div>
+      <ExportPopup colors={colors} />
     </div>
   </div>
 
@@ -94,7 +106,7 @@
     <div class="sidebar" class:sidebar-hidden={!showSidebar}>
       <Card>
         <div class="color-pickers">
-          <ColorPicker label="Base Color" bind:value={colors.base} />
+          <ColorPicker label="Base Color" bind:value={colors.background} />
           <ColorPicker label="Color 0" bind:value={colors.color0} />
           <ColorPicker label="Color 1" bind:value={colors.color1} />
           <ColorPicker label="Color 2" bind:value={colors.color2} />
@@ -102,7 +114,7 @@
           <ColorPicker label="Color 4" bind:value={colors.color4} />
           <ColorPicker label="Color 5" bind:value={colors.color5} />
           <ColorPicker label="Color 6" bind:value={colors.color6} />
-          <ColorPicker label="Surface" bind:value={colors.surface} />
+          <ColorPicker label="Surface" bind:value={colors.text} />
           <ColorPicker label="Color 7" bind:value={colors.color7} />
           <ColorPicker label="Color 8" bind:value={colors.color8} />
           <ColorPicker label="Color 9" bind:value={colors.color9} />
@@ -118,14 +130,14 @@
       <Card>
         <div class="preview">
           <h2>Terminal Preview</h2>
-          <TerminalPreview {colors} />
+          <TerminalPreview colors={colors} />
         </div>
       </Card>
 
       <Card>
         <div class="preview">
           <h2>Code Preview</h2>
-          <CodePreview {colors} />
+          <CodePreview colors={colors} />
         </div>
       </Card>
     </div>
@@ -136,12 +148,18 @@
   .header {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 2rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
     padding-left: var(--sidebar-width);
     position: relative;
+  }
+
+  .header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   .theme-switch {
@@ -166,7 +184,7 @@
     margin: 0;
     font-size: 1.5rem;
   }
-  
+
   .sidebar {
     width: var(--sidebar-width);
     position: fixed;
