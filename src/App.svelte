@@ -55,12 +55,30 @@
 
     const theme = darkMode ? "dark" : "light";
 
-    // Apply to HTML element
+    // Apply theme classes
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.className = theme;
 
-    // Ensure body also has the theme class
     document.body.className = theme;
+
+    // Apply user colors to root
+    const root = document.documentElement;
+    root.style.setProperty("--base", colors.text);
+    root.style.setProperty("--surface", colors.background);
+    root.style.setProperty("--color0", colors.color0);
+    root.style.setProperty("--color1", colors.color1);
+    root.style.setProperty("--color2", colors.color2);
+    root.style.setProperty("--color3", colors.color3);
+    root.style.setProperty("--color4", colors.color4);
+    root.style.setProperty("--color5", colors.color5);
+    root.style.setProperty("--color6", colors.color6);
+    root.style.setProperty("--color7", colors.color7);
+    root.style.setProperty("--color8", colors.color8);
+    root.style.setProperty("--color9", colors.color9);
+    root.style.setProperty("--color10", colors.color10);
+    root.style.setProperty("--color11", colors.color11);
+    root.style.setProperty("--color12", colors.color12);
+    root.style.setProperty("--color13", colors.color13);
   }
 
   function toggleTheme() {
@@ -72,7 +90,7 @@
     localStorage.setItem("darkMode", darkMode.toString());
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.className = theme;
-    document.body.className = theme;    
+    document.body.className = theme;
     console.log("Theme switched to:", theme, darkMode);
   }
 
@@ -91,14 +109,18 @@
         <span>🌞</span>
         <button
           class="toggle-sidebar"
+          class:sidebar-shown={showSidebar}
           on:click={() => (showSidebar = !showSidebar)}
         >
           {showSidebar ? "✕" : "☰"}
         </button>
-        <Switch on:click={toggleTheme} bind:checked={darkMode} />
+        <Switch
+          onSMUISwitchChange={() => toggleTheme}
+          bind:checked={darkMode}
+        />
         <span>🌙</span>
       </div>
-      <ExportPopup colors={colors} />
+      <ExportPopup bind:colors />
     </div>
   </div>
 
@@ -130,14 +152,14 @@
       <Card>
         <div class="preview">
           <h2>Terminal Preview</h2>
-          <TerminalPreview colors={colors} />
+          <TerminalPreview bind:colors />
         </div>
       </Card>
 
       <Card>
         <div class="preview">
           <h2>Code Preview</h2>
-          <CodePreview colors={colors} />
+          <CodePreview bind:colors />
         </div>
       </Card>
     </div>
@@ -152,13 +174,15 @@
     gap: 2rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
-    padding-left: var(--sidebar-width);
+    padding-left: calc(var(--sidebar-width) + 2rem);
+    padding-right: 0.8rem;
     position: relative;
   }
 
   .header-controls {
     display: flex;
     align-items: center;
+    margin-right: 1rem;
     gap: 1rem;
   }
 
@@ -220,6 +244,11 @@
     justify-content: center;
     cursor: pointer;
     font-size: 1.2rem;
+    transition: left 0.3s ease-in-out;
+  }
+
+  .sidebar-shown {
+    left: calc(var(--sidebar-width) - 1rem);
   }
 
   .preview-section {
@@ -249,8 +278,9 @@
 
   @media (max-width: 1024px) {
     .header {
-      padding-left: 0;
-      margin-bottom: 0.5rem;
+      padding-left: 4rem;
+      padding-right: 1rem;
+      margin-bottom: 0.8rem;
     }
 
     h1 {
