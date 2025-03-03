@@ -2,14 +2,14 @@
   import { onMount } from "svelte";
   import Card from "@smui/card";
   import Switch from "@smui/switch";
-  import ColorPicker from "./lib/ColorPicker.svelte";
+  import Sidebar from "./lib/Sidebar.svelte";
   import CodePreview from "./lib/CodePreview.svelte";
   import TerminalPreview from "./lib/TerminalPreview.svelte";
   import ExportPopup from "./lib/ExportPopup.svelte";
   import type { theme } from "./Types.svelte";
 
   let darkMode = true;
-  let showSidebar = true;
+  let showSidebar = false;
   let mounted = false;
 
   let colors: theme = {
@@ -125,28 +125,7 @@
   </div>
 
   <div class="layout">
-    <div class="sidebar" class:sidebar-hidden={!showSidebar}>
-      <Card>
-        <div class="color-pickers">
-          <ColorPicker label="Base Color" bind:value={colors.background} />
-          <ColorPicker label="Color 0" bind:value={colors.color0} />
-          <ColorPicker label="Color 1" bind:value={colors.color1} />
-          <ColorPicker label="Color 2" bind:value={colors.color2} />
-          <ColorPicker label="Color 3" bind:value={colors.color3} />
-          <ColorPicker label="Color 4" bind:value={colors.color4} />
-          <ColorPicker label="Color 5" bind:value={colors.color5} />
-          <ColorPicker label="Color 6" bind:value={colors.color6} />
-          <ColorPicker label="Surface" bind:value={colors.text} />
-          <ColorPicker label="Color 7" bind:value={colors.color7} />
-          <ColorPicker label="Color 8" bind:value={colors.color8} />
-          <ColorPicker label="Color 9" bind:value={colors.color9} />
-          <ColorPicker label="Color 10" bind:value={colors.color10} />
-          <ColorPicker label="Color 11" bind:value={colors.color11} />
-          <ColorPicker label="Color 12" bind:value={colors.color12} />
-          <ColorPicker label="Color 13" bind:value={colors.color13} />
-        </div>
-      </Card>
-    </div>
+  <Sidebar bind:colors bind:showSidebar />
 
     <div class="preview-section">
       <Card>
@@ -209,25 +188,6 @@
     font-size: 1.5rem;
   }
 
-  .sidebar {
-    width: var(--sidebar-width);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    background-color: var(--bg-color);
-    padding: 1rem;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-    z-index: 100;
-    transform: translateX(0);
-    height: 100vh;
-  }
-
-  .sidebar-hidden {
-    transform: translateX(-100%);
-  }
-
   .toggle-sidebar {
     position: fixed;
     top: 1rem;
@@ -258,14 +218,6 @@
     gap: 2rem;
   }
 
-  .color-pickers {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   .preview {
     padding: 1rem;
   }
@@ -293,12 +245,6 @@
 
     .toggle-sidebar {
       display: flex;
-    }
-
-    .sidebar {
-      width: 100%;
-      max-width: 320px;
-      height: auto;
     }
 
     .layout {

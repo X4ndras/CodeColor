@@ -1,5 +1,16 @@
 <script lang="ts">
+  import Button, { Group, Icon, Label } from "@smui/button";
   import type { theme } from "../Types.svelte";
+  import {
+    mdiAt,
+    mdiContentCopy,
+    mdiDownload,
+    mdiExportVariant,
+    mdiFileExport,
+    mdiFileImport,
+    mdiImport,
+    mdiInvoiceImportOutline,
+  } from "@mdi/js";
 
   export let colors: theme;
 
@@ -50,11 +61,12 @@
   }
 
   function copyToClipboard() {
-    navigator.clipboard.writeText(exportContent)
+    navigator.clipboard
+      .writeText(exportContent)
       .then(() => {
         showToast("Copied to clipboard", "success");
       })
-      .catch(err => {
+      .catch((err) => {
         showToast("Failed to copy to clipboard", "error");
         console.error("Copy failed:", err);
       });
@@ -71,11 +83,11 @@
     const themeData = {};
     const regex = /--(\w+):\s*([^;]+);/g;
     let match;
-    
+
     while ((match = regex.exec(cssContent)) !== null) {
       const property = match[1];
       const value = match[2].trim();
-      
+
       // Map CSS variables to theme properties
       if (property === "base") {
         themeData.text = value;
@@ -85,7 +97,7 @@
         themeData[property] = value;
       }
     }
-    
+
     return themeData;
   }
 
@@ -100,11 +112,11 @@
       try {
         const content = e.target?.result as string;
         let importedTheme;
-        
+
         // Detect if the file is JSON or CSS
-        if (file.name.endsWith('.json')) {
+        if (file.name.endsWith(".json")) {
           importedTheme = JSON.parse(content);
-        } else if (file.name.endsWith('.css')) {
+        } else if (file.name.endsWith(".css")) {
           importedTheme = parseCSS(content);
         } else {
           throw new Error("Unsupported file format");
@@ -112,25 +124,42 @@
 
         // Validate the imported theme structure
         const requiredKeys = [
-          'background', 'text', 
-          'color0', 'color1', 'color2', 'color3', 'color4', 'color5', 'color6', 'color7',
-          'color8', 'color9', 'color10', 'color11', 'color12', 'color13', 'color14', 'color15'
+          "background",
+          "text",
+          "color0",
+          "color1",
+          "color2",
+          "color3",
+          "color4",
+          "color5",
+          "color6",
+          "color7",
+          "color8",
+          "color9",
+          "color10",
+          "color11",
+          "color12",
+          "color13",
+          "color14",
+          "color15",
         ];
 
-        const missingKeys = requiredKeys.filter(key => !(key in importedTheme));
-        
+        const missingKeys = requiredKeys.filter(
+          (key) => !(key in importedTheme),
+        );
+
         if (missingKeys.length > 0) {
-          importError = `Invalid theme format. Missing properties: ${missingKeys.join(', ')}`;
+          importError = `Invalid theme format. Missing properties: ${missingKeys.join(", ")}`;
           showToast(importError, "error");
           return;
         }
 
         // Create a new object to trigger reactivity
         colors = { ...importedTheme };
-        
+
         // Force update the DOM
         colors = colors;
-        
+
         importError = "";
         showPopup = false; // Close the popup after successful import
         showToast("Theme imported successfully", "success");
@@ -155,12 +184,16 @@
 </script>
 
 <div class="export-popup">
-  <button class="export-button" on:click={() => (showPopup = !showPopup)}>
-    Export
-  </button>
-  
-  <button class="import-button" on:click={() => document.getElementById('import-file')?.click()}>
-    Import
+  <Button
+    class="import-button"
+    onclick={() => document.getElementById("import-file")?.click()}
+    variant="raised"
+    color="secondary"
+  >
+    <Icon tag="svg" viewBox="0 0 24 24">
+      <path fill="currentcolor" d={mdiFileImport} />
+    </Icon>
+    <Label>Import</Label>
     <input
       id="import-file"
       type="file"
@@ -168,25 +201,40 @@
       style="display: none;"
       on:change={handleFileImport}
     />
-  </button>
+  </Button>
+
+  <Button
+    class="export-button"
+    onclick={() => (showPopup = !showPopup)}
+    variant="raised"
+  >
+    <Icon tag="svg" viewBox="0 0 24 24">
+      <path fill="currentcolor" d={mdiFileExport} />
+    </Icon>
+    <Label>Export</Label>
+  </Button>
 
   {#if showPopup}
     <div class="popup-content">
       <div class="format-selector">
-        <button
-          class="format-button"
-          class:active={exportFormat === "json"}
-          on:click={() => (exportFormat = "json")}
-        >
-          JSON
-        </button>
-        <button
-          class="format-button"
-          class:active={exportFormat === "css"}
-          on:click={() => (exportFormat = "css")}
-        >
-          CSS
-        </button>
+        <Group>
+          <Button
+            class="format-button"
+            onclick={() => (exportFormat = "json")}
+            variant="outlined"
+            color={exportFormat == "json" ? "primary" : "secondary"}
+          >
+            <Label>JSON</Label>
+          </Button>
+          <Button
+            class="format-button"
+            onclick={() => (exportFormat = "css")}
+            variant="outlined"
+            color={exportFormat == "css" ? "primary" : "secondary"}
+          >
+            <Label>CSS</Label>
+          </Button>
+        </Group>
       </div>
 
       <div class="preview-window">
@@ -194,12 +242,27 @@
       </div>
 
       <div class="button-group">
-        <button class="download-button" on:click={downloadFile}>
-          Download
-        </button>
-        <button class="copy-button" on:click={copyToClipboard}>
-          Copy to Clipboard
-        </button>
+        <Button
+          class="download-button"
+          onclick={downloadFile}
+          variant="unelevated"
+        >
+          <Icon tag="svg" viewBox="0 0 24 24">
+            <path fill="currentcolor" d={mdiDownload} />
+          </Icon>
+          <Label>Download</Label>
+        </Button>
+        <Button
+          class="copy-button"
+          onclick={copyToClipboard}
+          variant="unelevated"
+          color="secondary"
+        >
+          <Icon tag="svg" viewBox="0 0 24 24">
+            <path fill="currentcolor" d={mdiContentCopy} />
+          </Icon>
+          <Label>Copy to Clipboard</Label>
+        </Button>
       </div>
       {#if importError}
         <div class="import-error">
@@ -208,9 +271,13 @@
       {/if}
     </div>
   {/if}
-  
+
   {#if toast.show}
-    <div class="toast" class:toast-success={toast.type === "success"} class:toast-error={toast.type === "error"}>
+    <div
+      class="toast"
+      class:toast-success={toast.type === "success"}
+      class:toast-error={toast.type === "error"}
+    >
       <div class="toast-icon">
         {#if toast.type === "success"}
           ✓
@@ -336,7 +403,7 @@
   .download-button:hover {
     background-color: var(--secondary);
   }
-  
+
   .toast {
     position: fixed;
     bottom: 20px;
@@ -351,24 +418,24 @@
     z-index: 1000;
     animation: slideUp 0.3s ease-out forwards;
   }
-  
+
   .toast-success {
     background-color: #27c93f;
   }
-  
+
   .toast-error {
     background-color: #ff5f56;
   }
-  
+
   .toast-icon {
     margin-right: 0.5rem;
     font-weight: bold;
   }
-  
+
   .toast-message {
     font-size: 0.9rem;
   }
-  
+
   @keyframes slideUp {
     from {
       opacity: 0;

@@ -18,8 +18,10 @@
       on:input={handleInput}
     />
     <div class="textfield">
-      <label>{label}</label>
-      <input type="text" bind:value />
+      <Textfield 
+      label="{label}"
+      type="text" 
+      bind:value />
     </div>
   </div>
 </div>
