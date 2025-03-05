@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import Card from "@smui/card";
   import ColorPicker from "./ColorPicker.svelte";
-  import type { theme } from "../Types.svelte";
+  import { type theme, type ThemeColor, colorKeys } from "../Types.svelte";
 
   export let colors: theme;
   export let showSidebar: boolean;
@@ -25,22 +25,17 @@
 <div class="sidebar" class:sidebar-hidden={!showSidebar}>
   <Card>
     <div class="color-pickers">
-      <ColorPicker label="Base Color" bind:value={colors.background} />
-      <ColorPicker label="Color 0" bind:value={colors.color0} />
-      <ColorPicker label="Color 1" bind:value={colors.color1} />
-      <ColorPicker label="Color 2" bind:value={colors.color2} />
-      <ColorPicker label="Color 3" bind:value={colors.color3} />
-      <ColorPicker label="Color 4" bind:value={colors.color4} />
-      <ColorPicker label="Color 5" bind:value={colors.color5} />
-      <ColorPicker label="Color 6" bind:value={colors.color6} />
-      <ColorPicker label="Surface" bind:value={colors.text} />
-      <ColorPicker label="Color 7" bind:value={colors.color7} />
-      <ColorPicker label="Color 8" bind:value={colors.color8} />
-      <ColorPicker label="Color 9" bind:value={colors.color9} />
-      <ColorPicker label="Color 10" bind:value={colors.color10} />
-      <ColorPicker label="Color 11" bind:value={colors.color11} />
-      <ColorPicker label="Color 12" bind:value={colors.color12} />
-      <ColorPicker label="Color 13" bind:value={colors.color13} />
+      {#each colorKeys as { key, description, label }}
+        {#if colors && colors[key]}
+          <ColorPicker
+            label={colors[key].label}
+            bind:value={colors[key].value}
+          />
+        {:else}
+          <!-- Fallback if color is not defined -->
+          <p>Error: {key} not found</p>
+        {/if}
+      {/each}
     </div>
   </Card>
 </div>

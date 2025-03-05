@@ -1,10 +1,9 @@
 <script lang="ts">
   import { mdiClose, mdiContentCopy, mdiGrid } from "@mdi/js";
-  export let color: string;
-  export let label: string;
-  export let expanded = false;
   import tinycolor from "tinycolor2";
 
+  export let color: string;
+  export let label: string;
   import Snackbar, { Actions, Label } from "@smui/snackbar";
   import IconButton, { Icon } from "@smui/icon-button";
 
@@ -47,7 +46,10 @@
   }
 </script>
 
-<div class="color-cell" class:expanded style="background-color: {color}">
+<div
+  class="color-cell {tinycolor(color).isLight() ? 'light' : 'dark'}"
+  style="background-color: {color}"
+>
   {label}
   {color}
   <div class="button-container">
@@ -76,7 +78,6 @@
       {#each shades as shade}
         <button
           class="shade"
-          class:expanded
           style="background-color: {shade}"
           on:click={() => copyColor(shade)}
         >
@@ -101,21 +102,29 @@
 <style>
   .color-cell {
     flex: 1;
-    height: 6rem;
+    height: 8rem;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--base);
+    margin-top: 0.5rem;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+
     font-family: "JetBrains Mono", monospace;
     font-size: 0.8rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
     position: relative;
   }
 
-  .color-cell.expanded {
-    min-height: 6rem;
-    height: 100%;
+  .color-cell.light {
+    color: #000;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+  }
+
+  .color-cell.dark {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
   .button-container {
@@ -135,13 +144,24 @@
   .button-container button {
     background: rgba(0, 0, 0, 0.5);
     border: none;
-    border-radius: 4px;
-    padding: 2px;
+    border-radius: 0.2vw;
+    padding: 0.2vw;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    width: 2vw;
+    height: 2vw;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  .button-container button svg {
+    width: 1.2vw;
+    height: 1.2vw;
+    min-width: 16px;
+    min-height: 16px;
   }
 
   .button-container button:hover {
@@ -157,7 +177,9 @@
     gap: 2px;
     padding: 4px;
     background: rgba(0, 0, 0, 0.8);
-    border-radius: 0 0 4px 4px;
+    border-radius: 2px;
+    /*border-radius: 0 0 4px 4px;*/
+    max-width: 100%;
   }
 
   .shade {
@@ -167,10 +189,6 @@
     cursor: pointer;
     position: relative;
     transition: transform 0.2s;
-  }
-
-  .shade.expanded {
-    height: 3rem;
   }
 
   .shade:hover {

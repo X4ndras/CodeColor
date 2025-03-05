@@ -636,7 +636,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     font-family: "JetBrains Mono", monospace;
     font-size: 14px;
     line-height: 1.5;
-    max-height: 600px;
   }
   
   pre {

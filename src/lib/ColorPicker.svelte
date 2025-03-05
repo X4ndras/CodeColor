@@ -47,13 +47,6 @@
     flex: 1;
   }
   
-  .color-preview {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-  }
-  
   input[type="color"] {
     all: unset;
     width: 2.5rem;
@@ -67,11 +60,6 @@
   @media (max-width: 1024px) {
     .color-input {
       gap: 0.25rem;
-    }
-
-    .color-preview {
-      width: 1.5rem;
-      height: 1.5rem;
     }
 
     input[type="color"] {

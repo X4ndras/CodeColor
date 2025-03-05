@@ -20,7 +20,7 @@
 }
 
 /* Use both class and attribute selectors for maximum compatibility */
-.dark, 
+.dark,
 [data-theme="dark"],
 html.dark,
 html[data-theme="dark"] {
@@ -33,7 +33,7 @@ html[data-theme="dark"] {
   color-scheme: dark;
 }
 
-.light, 
+.light,
 [data-theme="light"],
 html.light,
 html[data-theme="light"] {
@@ -51,7 +51,9 @@ body {
   min-height: 100vh;
   background-color: var(--bg-color);
   color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 body.dark {
@@ -77,8 +79,8 @@ body.light {
 }
 
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+  font-family: "JetBrains Mono";
+  src: url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap");
 }
 
 @media (max-width: 1024px) {
