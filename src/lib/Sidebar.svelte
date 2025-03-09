@@ -28,8 +28,8 @@
       {#each colorKeys as { key, description, label }}
         {#if $colorStore && $colorStore[key]}
           <ColorPicker
-            label={$colorStore[key].label}
-            bind:value={$colorStore[key].value}
+            label={`${label} ${description}`}
+            bind:value={$colorStore[key]}
           />
         {:else}
           <!-- Fallback if color is not defined -->

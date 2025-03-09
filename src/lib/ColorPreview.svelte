@@ -37,13 +37,13 @@
       <div>
         <div
           class="separator"
-          style="background-color: {$colorStore.color7.value};"
+          style="background-color: {$colorStore.color7};"
         ></div>
       </div>
       <div>
         <div
           class="separator"
-          style="background-color: {$colorStore.color15.value};"
+          style="background-color: {$colorStore.color15};"
         ></div>
       </div>
       <ColorColumn column={leftAdditionalColumn} />

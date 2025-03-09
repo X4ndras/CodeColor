@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from "@smui/card";
   import Switch from "@smui/switch";
-  import Tab, { Label } from "@smui/tab";
+  import Tab, { Icon, Label } from "@smui/tab";
   import TabBar from "@smui/tab-bar";
   import Sidebar from "./lib/Sidebar.svelte";
   import CodePreview from "./lib/CodePreview.svelte";
@@ -9,40 +9,25 @@
   import ColorPreview from "./lib/ColorPreview.svelte";
   import { onMount } from "svelte";
   import { colorStore } from "./stores.svelte";
+  import { colorKeys } from "./Types.svelte";
+  import { mdiWeatherSunny } from "@mdi/js";
+  import Button from "@smui/button";
 
   let showSidebar = $state(false);
   let active = $state("code");
-  let mounted = $state(false);
   let darkMode = $state(false);
 
   function applyTheme() {
-    if (!mounted) return;
-
     const root = document.documentElement;
-
-    root.style.setProperty("--color0", $colorStore.color0.value);
-    root.style.setProperty("--color1", $colorStore.color1.value);
-    root.style.setProperty("--color2", $colorStore.color2.value);
-    root.style.setProperty("--color3", $colorStore.color3.value);
-    root.style.setProperty("--color4", $colorStore.color4.value);
-    root.style.setProperty("--color5", $colorStore.color5.value);
-    root.style.setProperty("--color6", $colorStore.color6.value);
-    root.style.setProperty("--color7", $colorStore.color7.value);
-
-    root.style.setProperty("--color8", $colorStore.color8.value);
-    root.style.setProperty("--color9", $colorStore.color9.value);
-    root.style.setProperty("--color10", $colorStore.color10.value);
-    root.style.setProperty("--color11", $colorStore.color11.value);
-    root.style.setProperty("--color12", $colorStore.color12.value);
-    root.style.setProperty("--color13", $colorStore.color13.value);
-    root.style.setProperty("--color14", $colorStore.color14.value);
-    root.style.setProperty("--color15", $colorStore.color15.value);
-
-    root.style.setProperty("--color16", $colorStore.color16.value);
-    root.style.setProperty("--color17", $colorStore.color17.value);
+    // Get all keys from the color store
+    //
+    for (const { key, description, label } of colorKeys) {
+      root.style.setProperty(`--${key}`, $colorStore[key]);
+    }
   }
 
   onMount(() => {
+    applyTheme();
     darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
@@ -71,10 +56,10 @@
 
 <main>
   <div class="header">
-    <h1>Code:Color</h1>
+    <h1>Code: Color</h1>
     <div class="header-controls">
       <div class="theme-switch">
-        <span>🌞</span>
+        <span></span>
         <button
           class="toggle-sidebar"
           class:sidebar-shown={showSidebar}

@@ -12,7 +12,7 @@
 
 html,
 body {
-  background-color: theme.$background;
+  background-color: var(--fg);
   color: theme.$on-surface;
 }
 

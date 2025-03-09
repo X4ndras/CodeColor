@@ -1,3 +1,98 @@
+<script lang="ts" context="module">
+  import { colorStore } from "../stores.svelte";
+  import type { Theme } from "../Types.svelte";
+
+  let colors: Theme;
+  colorStore.subscribe((value) => {
+    colors = value;
+    updateHighlightStyles();
+  });
+
+  function updateHighlightStyles() {
+    const style = document.createElement("style");
+    style.textContent = `
+        .hljs {
+          color: ${colors.fg1}; /* Default text color */
+          background: transparent;
+        }
+
+        /* Variables */
+        .hljs-attr,
+        .hljs-property,
+        .hljs-template-variable,
+        .hljs-params {
+          color: ${colors.color1}; /* red */
+        }
+
+        /* Strings */
+        .hljs-string,
+        .hljs-doctag,
+        .hljs-regexp {
+          color: ${colors.color2}; /* green */
+        }
+
+        /* Numbers */
+        .hljs-number,
+        .hljs-literal {
+          color: ${colors.color16}; /* orange */
+        }
+
+        /* Comments */
+        .hljs-comment,
+        .hljs-quote {
+          color: ${colors.color8}; /* lighter gray */
+          font-style: italic;
+        }
+
+        /* Generics/Types */
+        .hljs-title.class_,
+        .hljs-type,
+        .hljs-built_in {
+          color: ${colors.color3}; /* light yellow */
+        }
+
+        /* Keywords */
+        .hljs-variable,
+        .hljs-keyword {
+          color: ${colors.color5}; /* purple */
+        }
+
+        /* Functions */
+        .hljs-function,
+        .hljs-title.function_ {
+          color: ${colors.color4}; /* blue */
+        }
+
+        /* Operators and punctuation */
+        .hljs-operator,
+        .hljs-punctuation {
+          color: ${colors.fg1}; /* default text color */
+        }
+
+        /* Line numbers */
+        .line-number {
+          color: ${colors.color8} !important; /* darker gray */
+        }
+
+        /* Selection */
+        .hljs ::selection {
+          background-color: ${colors.bg2};
+          color: ${colors.fg0};
+        }
+      `;
+
+    // Remove any existing highlight.js style element
+    const existingStyle = document.getElementById("hljs-theme-override");
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+
+    // Add the new style element
+    style.id = "hljs-theme-override";
+    document.head.appendChild(style);
+  }
+</script>
+
 <script lang="ts">
   import { onMount } from "svelte";
   import hljs from "highlight.js/lib/core";
@@ -14,6 +109,7 @@
   import "highlight.js/styles/github-dark.css";
   import Button, { Group } from "@smui/button";
   import { codeSnippets, type CodeSnippets } from "../Snippets.svelte";
+
   // Tab management
   let tabs = [
     { id: "rust", name: "Rust" },
@@ -41,6 +137,9 @@
     hljs.registerLanguage("typescript", typescript);
     hljs.registerLanguage("go", go);
     hljs.registerLanguage("css", css);
+
+    updateHighlightStyles();
+
     // Fix the reactive statement to use the correct parameter format
     highlighted[selectedTab] = hljs.highlight(codeSnippets[selectedTab], {
       language: selectedTab,
@@ -89,6 +188,8 @@
 
 <style>
   .code-preview-container {
+    background: var(--color0);
+    color: var(--color15);
     display: flex;
     flex-direction: column;
     border-radius: 0px 0px 8px 8px;
@@ -102,7 +203,6 @@
     border-radius: 16px 16px 0 0;
   }
   .code-preview {
-    background-color: #000;
     padding: 1rem;
     border-radius: 0 0 8px 8px;
     overflow: auto;
@@ -122,7 +222,7 @@
   }
 
   :global(.line-number) {
-    color: #6e7681;
+    color: var(--fg2);
     text-align: right;
     padding-right: 1em;
     user-select: none;
@@ -133,6 +233,10 @@
   :global(.line-content) {
     display: inline-block;
     white-space: pre;
+  }
+
+  :global(.hljs) {
+    background-color: transparent !important;
   }
 
   /* Responsive adjustments */

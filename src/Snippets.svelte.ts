@@ -19,8 +19,7 @@ export const codeSnippets: CodeSnippets = {
 //************************
 // Javascript
 //************************
-codeSnippets.javascript = `
-import { EventEmitter } from 'events';
+codeSnippets.javascript = `import { EventEmitter } from 'events';
 /*
 * Welcome to Code: Color
 */
@@ -111,17 +110,11 @@ main();
 //************************
 // Python
 //************************
-codeSnippets.python = `
-# Welcome to Code: Color
+codeSnippets.python = `# Welcome to Code: Color
 import asyncio
 import json
 from dataclasses import dataclass
 from typing import List, Dict, Optional, Any
-
-"""
-A simple Python demonstration
-with various language features
-"""
 
 @dataclass
 class Person:
@@ -438,8 +431,7 @@ namespace CodeColorDemo
 //************************
 // Rust
 //************************
-codeSnippets.rust = `
-// Welcome to Code: Color
+codeSnippets.rust = `// Welcome to Code: Color
 use std::collections::HashMap;
 use async_trait::async_trait;
 use tokio::time::{sleep, Duration};
@@ -563,10 +555,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //************************
 // Lua
 //************************
-codeSnippets.lua = `
--- Welcome to Code: Color
-
+codeSnippets.lua = `-- Welcome to Code: Color
 -- Class-like implementation using metatables
+
 local Person = {}
 Person.__index = Person
 
@@ -646,95 +637,94 @@ main()
 //************************
 // TypeScript
 //************************
-codeSnippets.typescript = `
-// Welcome to Code: Color
+codeSnippets.typescript = `// Welcome to Code: Color
 
 interface DataResponse<T> {
-    status: string;
-    data: T;
+  status: string;
+  data: T;
 }
 
 class Person<T = number> {
-    #privateField: T;
+  private privateField: T;
 
-    constructor(
-        private readonly name: string,
-        private readonly age: T,
-        private readonly flyingForce: number = 9999.99
-    ) {
-        this.#privateField = age;
-    }
+  constructor(
+    private readonly name: string,
+    private readonly age: T,
+    private readonly flyingForce: number = 9999.99
+  ) {
+    this.privateField = age;
+  }
 
-    speak = (): void => {
-        console.log(\`Hello, my name is \${this.name}\`);
-    }
+  speak = (): void => {
+    console.log(\`Hello, my name is \${this.name}\`);
+  }
 
-    static createDefault(): Person {
-        return new Person("Alice", 30);
-    }
+  static createDefault(): Person {
+    return new Person("Alice", 30);
+  }
 }
 
 async function fetchData<T>(url: string): Promise<DataResponse<T>> {
-    try {
-        const response = await fetch(url);
-        return await response.json();
-    } catch (error) {
-        throw new Error(\`Failed to fetch: \${error}\`);
-    }
+  try {
+    const response = await fetch(url);
+    return await response.json();
+  } catch (error) {
+    throw new Error(\`Failed to fetch: \${error}\`);
+  }
 }
 
 const main = async (): Promise<void> => {
-    // Type annotations
-    let x: number = 5;
+  // Type annotations
+  let x: number = 5;
 
-    // Conditional logic with type narrowing
-    if (typeof x === "number" && x > 3) {
-        console.log("x is greater than 3");
+  // Conditional logic with type narrowing
+  if (typeof x === "number" && x > 3) {
+    console.log("x is greater than 3");
+  }
+
+  // Generic array
+  const numbers: Array<number> = [1, 2, 3, 4, 5];
+
+  // Array methods with type inference
+  const doubled = numbers.map((n): number => n * 2);
+  const filtered = numbers.filter((n): boolean => n % 2 === 0);
+
+  // Using the generic class
+  const person = new Person<number>("Alice", 30);
+  person.speak();
+
+  // Destructuring with type annotations
+  const { name, age }: { name: string; age: number } = {
+    name: "Alice",
+    age: 30
+  };
+
+  // Union types
+  type Status = "pending" | "success" | "error";
+  let status: Status = "pending";
+
+  // Enum example
+  enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT"
+  }
+
+  // Type guards
+  function isString(value: unknown): value is string {
+    return typeof value === "string";
+  }
+
+  // Async/await with error handling
+  try {
+    const data = await fetchData<number[]>("https://api.example.com/data");
+    console.log(data);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
     }
-
-    // Generic array
-    const numbers: Array<number> = [1, 2, 3, 4, 5];
-
-    // Array methods with type inference
-    const doubled = numbers.map((n): number => n * 2);
-    const filtered = numbers.filter((n): boolean => n % 2 === 0);
-
-    // Using the generic class
-    const person = new Person<number>("Alice", 30);
-    person.speak();
-
-    // Destructuring with type annotations
-    const { name, age }: { name: string; age: number } = {
-        name: "Alice",
-        age: 30
-    };
-
-    // Union types
-    type Status = "pending" | "success" | "error";
-    let status: Status = "pending";
-
-    // Enum example
-    enum Direction {
-        Up = "UP",
-        Down = "DOWN",
-        Left = "LEFT",
-        Right = "RIGHT"
-    }
-
-    // Type guards
-    function isString(value: unknown): value is string {
-        return typeof value === "string";
-    }
-
-    // Async/await with error handling
-    try {
-        const data = await fetchData<number[]>("https://api.example.com/data");
-        console.log(data);
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error(error.message);
-        }
-    }
+  }
 };
 
 main().catch(console.error);
@@ -743,8 +733,7 @@ main().catch(console.error);
 //************************
 // C
 //************************
-codeSnippets.c = `
-// Welcome to Code: Color
+codeSnippets.c = `// Welcome to Code: Color
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -853,8 +842,7 @@ int main(void) {
 //************************
 // Go
 //************************
-codeSnippets.go = `
-// Welcome to Code: Color
+codeSnippets.go = `// Welcome to Code: Color
 package main
 
 import (
@@ -1057,9 +1045,7 @@ codeSnippets.html = `
 //************************
 // CSS
 //************************
-codeSnippets.css = `
-/* Welcome to Code: Color */
-
+codeSnippets.css = `/* Welcome to Code: Color */
 /* Reset and Base Styles */
 :root {
     --primary-color: #6200ee;

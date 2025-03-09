@@ -7,14 +7,11 @@
 </script>
 
 <div>
-  {#each column as colorKeyItem}
-    {#if $colorStore && $colorStore[colorKeyItem.key]}
-      <ColorCell
-        color={$colorStore[colorKeyItem.key].value}
-        label={$colorStore[colorKeyItem.key].label}
-      />
+  {#each column as { key, label, description }}
+    {#if $colorStore && $colorStore[key]}
+      <ColorCell color={$colorStore[key]} label={`${label} ${description}`} />
     {:else}
-      <div class="error-cell">Error: {colorKeyItem.key} not found</div>
+      <div class="error-cell">Error: {key} not found</div>
     {/if}
   {/each}
 </div>

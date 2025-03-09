@@ -1,44 +1,39 @@
 <script lang="ts" context="module">
-  export interface ThemeColor {
-    value: string;
-    label: string;
-  }
-
   export interface Theme {
     /* ANSI Colors 0 to 7 (Standard Colors) */
-    color0: ThemeColor; // Black (bg)
-    color1: ThemeColor; // Red
-    color2: ThemeColor; // Green
-    color3: ThemeColor; // Yellow
-    color4: ThemeColor; // Blue
-    color5: ThemeColor; // Magenta
-    color6: ThemeColor; // Cyan
-    color7: ThemeColor; // Light Gray / shade of fg (darker) -> gray
+    color0: string; // Black (bg)
+    color1: string; // Red
+    color2: string; // Green
+    color3: string; // Yellow
+    color4: string; // Blue
+    color5: string; // Magenta
+    color6: string; // Cyan
+    color7: string; // Light Gray / shade of fg (darker) -> gray
 
     /* ANSI Colors 8 to 15 (Bright Colors) */
-    color8: ThemeColor; // Dark gray / shade of bg (ligther) -> gray
-    color9: ThemeColor; // Bright Red
-    color10: ThemeColor; // Bright Green
-    color11: ThemeColor; // Bright Yellow
-    color12: ThemeColor; // Bright Blue
-    color13: ThemeColor; // Bright Magenta
-    color14: ThemeColor; // Bright Cyan
-    color15: ThemeColor; // White (fg)
+    color8: string; // Dark gray / shade of bg (ligther) -> gray
+    color9: string; // Bright Red
+    color10: string; // Bright Green
+    color11: string; // Bright Yellow
+    color12: string; // Bright Blue
+    color13: string; // Bright Magenta
+    color14: string; // Bright Cyan
+    color15: string; // White (fg)
 
-    color16: ThemeColor; // Orange
-    color17: ThemeColor; // Bright Orange
+    color16: string; // Orange
+    color17: string; // Bright Orange
 
     // contrast alternatives (shades of fg / bg)
-    bg0: ThemeColor; // bh0_h darker bg (not covered)
+    bg0: string; // bh0_h darker bg (not covered)
     // bg color itself color0
-    bg1: ThemeColor; // bh0_s lighter bg (surface)
-    bg2: ThemeColor; // bg1 (overlay)
+    bg1: string; // bh0_s lighter bg (surface)
+    bg2: string; // bg1 (overlay)
     //bg2: ThemeColor; //
 
-    fg0: ThemeColor; // fg0 lighter fg
+    fg0: string; // fg0 lighter fg
     // fg color itself color15
-    fg1: ThemeColor; // darker fg (subtle)
-    fg2: ThemeColor; // (muted)
+    fg1: string; // darker fg (subtle)
+    fg2: string; // (muted)
   }
 
   export interface ColorKey {
