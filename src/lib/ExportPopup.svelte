@@ -1,50 +1,41 @@
 <script lang="ts">
+  import hljs from "highlight.js/lib/core";
+  import json from "highlight.js/lib/languages/json";
+  import css from "highlight.js/lib/languages/css";
+  import { colorStore } from "../stores.svelte";
   import Button, { Group, Icon, Label } from "@smui/button";
-  import type { theme } from "../Types.svelte";
   import {
-    mdiAt,
     mdiContentCopy,
     mdiDownload,
-    mdiExportVariant,
     mdiFileExport,
     mdiFileImport,
-    mdiImport,
-    mdiInvoiceImportOutline,
   } from "@mdi/js";
+  import Dialog, { Content, Title, Actions } from "@smui/dialog";
+  import { onMount } from "svelte";
 
-  export let colors: theme;
-
-  let showPopup = false;
-  let exportFormat = "json";
-  let exportContent = "";
+  let exportFormat = $state("json");
+  let exportContent = $state("");
   let importError = "";
-  let toast = { show: false, message: "", type: "success" };
+  let toast = $state({ show: false, message: "", type: "success" });
+  let openDialog = $state(false);
+
+  function changeExportContent(format: string) {
+    exportFormat = format;
+    exportFormat === "json" ? generateJSON() : generateCSS();
+  }
 
   function generateJSON() {
-    return JSON.stringify(colors, null, 2);
+    const jsonString = JSON.stringify($colorStore, null, 2);
+    exportContent = hljs.highlight(jsonString, { language: "json" }).value;
   }
 
   function generateCSS() {
-    return `:root {
-  --base: ${colors.text};
-  --color0: ${colors.color0};
-  --color1: ${colors.color1};
-  --color2: ${colors.color2};
-  --color3: ${colors.color3};
-  --color4: ${colors.color4};
-  --color5: ${colors.color5};
-  --color6: ${colors.color6};
-  --surface: ${colors.background};
-  --color7: ${colors.color7};
-  --color8: ${colors.color8};
-  --color9: ${colors.color9};
-  --color10: ${colors.color10};
-  --color11: ${colors.color11};
-  --color12: ${colors.color12};
-  --color13: ${colors.color13};
-  --color14: ${colors.color14};
-  --color15: ${colors.color15};
-}`;
+    const cssProperties = Object.entries($colorStore)
+      .map(([key, value]) => `  --${key}: ${value};`)
+      .join("\n");
+
+    const cssString = `:root {\n${cssProperties}\n}`;
+    exportContent = hljs.highlight(cssString, { language: "css" }).value;
   }
 
   function downloadFile() {
@@ -72,30 +63,22 @@
       });
   }
 
-  function showToast(message, type = "success") {
+  function showToast(message: any, type = "success") {
     toast = { show: true, message, type };
     setTimeout(() => {
       toast = { ...toast, show: false };
     }, 3000);
   }
 
-  function parseCSS(cssContent) {
-    const themeData = {};
+  function parseCSS(cssContent: any) {
+    const themeData: Record<string, string> = {};
     const regex = /--(\w+):\s*([^;]+);/g;
     let match;
 
     while ((match = regex.exec(cssContent)) !== null) {
-      const property = match[1];
-      const value = match[2].trim();
-
-      // Map CSS variables to theme properties
-      if (property === "base") {
-        themeData.text = value;
-      } else if (property === "surface") {
-        themeData.background = value;
-      } else if (property.startsWith("color")) {
-        themeData[property] = value;
-      }
+      const themeProperty: string = match[1] as string;
+      const themeValue = match[2].trim();
+      themeData[themeProperty] = themeValue;
     }
 
     return themeData;
@@ -155,13 +138,9 @@
         }
 
         // Create a new object to trigger reactivity
-        colors = { ...importedTheme };
-
-        // Force update the DOM
-        colors = colors;
+        $colorStore = { ...importedTheme };
 
         importError = "";
-        showPopup = false; // Close the popup after successful import
         showToast("Theme imported successfully", "success");
       } catch (error) {
         importError = "Failed to parse file. Please check the format.";
@@ -178,12 +157,56 @@
     reader.readAsText(file);
   }
 
-  $: if (showPopup) {
-    exportContent = exportFormat === "json" ? generateJSON() : generateCSS();
-  }
+  onMount(() => {
+    hljs.registerLanguage("json", json);
+    hljs.registerLanguage("css", css);
+    // Set initial content after languages are registered
+    generateJSON();
+  });
 </script>
 
-<div class="export-popup">
+<Dialog bind:open={openDialog} surface$style="max-height: 80vh">
+  <Title>Export Theme</Title>
+  <Content>
+    <Group variant="outlined">
+      <Button
+        class="format-button"
+        variant="outlined"
+        color={exportFormat === "json" ? "primary" : "secondary"}
+        onclick={() => changeExportContent("json")}
+      >
+        <Label>JSON</Label>
+      </Button>
+      <Button
+        class="format-button"
+        variant="outlined"
+        color={exportFormat === "css" ? "primary" : "secondary"}
+        onclick={() => changeExportContent("css")}
+      >
+        <Label>CSS</Label>
+      </Button>
+    </Group>
+    <div class="preview-window">
+      <pre><code>{@html exportContent}</code></pre>
+    </div>
+  </Content>
+  <Actions>
+    <Button variant="raised" color="secondary" onclick={copyToClipboard}>
+      <Icon tag="svg" viewBox="0 0 24 24">
+        <path fill="currentColor" d={mdiContentCopy} />
+      </Icon>
+      <Label>Copy to Clipboard</Label>
+    </Button>
+    <Button variant="raised" onclick={downloadFile}>
+      <Icon tag="svg" viewBox="0 0 24 24">
+        <path fill="currentColor" d={mdiDownload} />
+      </Icon>
+      <Label>Download</Label>
+    </Button>
+  </Actions>
+</Dialog>
+
+<div class="export-import-buttons">
   <Button
     class="import-button"
     onclick={() => document.getElementById("import-file")?.click()}
@@ -199,13 +222,16 @@
       type="file"
       accept=".json,.css"
       style="display: none;"
-      on:change={handleFileImport}
+      onchange={handleFileImport}
     />
   </Button>
 
   <Button
     class="export-button"
-    onclick={() => (showPopup = !showPopup)}
+    onclick={() => {
+      openDialog = !openDialog;
+      generateJSON();
+    }}
     variant="raised"
   >
     <Icon tag="svg" viewBox="0 0 24 24">
@@ -213,64 +239,6 @@
     </Icon>
     <Label>Export</Label>
   </Button>
-
-  {#if showPopup}
-    <div class="popup-content">
-      <div class="format-selector">
-        <Group>
-          <Button
-            class="format-button"
-            onclick={() => (exportFormat = "json")}
-            variant="outlined"
-            color={exportFormat == "json" ? "primary" : "secondary"}
-          >
-            <Label>JSON</Label>
-          </Button>
-          <Button
-            class="format-button"
-            onclick={() => (exportFormat = "css")}
-            variant="outlined"
-            color={exportFormat == "css" ? "primary" : "secondary"}
-          >
-            <Label>CSS</Label>
-          </Button>
-        </Group>
-      </div>
-
-      <div class="preview-window">
-        <pre>{exportContent}</pre>
-      </div>
-
-      <div class="button-group">
-        <Button
-          class="download-button"
-          onclick={downloadFile}
-          variant="unelevated"
-        >
-          <Icon tag="svg" viewBox="0 0 24 24">
-            <path fill="currentcolor" d={mdiDownload} />
-          </Icon>
-          <Label>Download</Label>
-        </Button>
-        <Button
-          class="copy-button"
-          onclick={copyToClipboard}
-          variant="unelevated"
-          color="secondary"
-        >
-          <Icon tag="svg" viewBox="0 0 24 24">
-            <path fill="currentcolor" d={mdiContentCopy} />
-          </Icon>
-          <Label>Copy to Clipboard</Label>
-        </Button>
-      </div>
-      {#if importError}
-        <div class="import-error">
-          {importError}
-        </div>
-      {/if}
-    </div>
-  {/if}
 
   {#if toast.show}
     <div
@@ -291,75 +259,19 @@
 </div>
 
 <style>
-  .export-popup {
-    position: relative;
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .export-button,
-  .import-button {
-    background-color: var(--primary);
-    border: 0px;
-    color: var(--text-color);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .export-button:hover,
-  .import-button:hover {
-    background-color: var(--secondary);
-  }
-
-  .import-error {
-    color: #ff4444;
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
-  }
-
-  .popup-content {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 0.5rem;
-    width: 400px;
-    z-index: 1000;
-  }
-
-  .format-selector {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .format-button {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-  }
-
-  .format-button.active {
-    border-color: var(--text-color);
-  }
-
   .preview-window {
     background-color: var(--bg-color);
-    padding: 1rem;
-    border-radius: 4px;
-    max-height: 300px;
-    overflow: auto;
-    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    max-height: 50vh; /* Set a maximum height */
+    overflow-y: auto; /* Add vertical scroll to preview window */
+  }
+
+  :global(.mdc-dialog__content) {
+    margin: 0 !important;
+    padding: 0.5rem !important;
+    overflow: hidden !important;
   }
 
   pre {
@@ -367,41 +279,9 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     font-family: "JetBrains Mono", monospace;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-color);
-  }
-
-  .button-group {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .copy-button,
-  .download-button {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .copy-button {
-    background-color: var(--surface);
-  }
-
-  .copy-button:hover {
-    border-color: var(--text-color);
-  }
-
-  .download-button {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-  }
-
-  .download-button:hover {
-    background-color: var(--secondary);
+    background: #000;
   }
 
   .toast {

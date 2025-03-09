@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { colorKeys, type ColorKey, type theme } from "../Types.svelte";
+  import { colorKeys, type ColorKey, type Theme } from "../Types.svelte";
   import ColorColumn from "./ColorColumn.svelte";
-
-  export let colors: theme;
+  import { colorStore } from "../stores.svelte";
 
   const terminalColors = colorKeys.slice(0, 16);
   const leftColumn = terminalColors.slice(0, 8); // Colors 0-7
@@ -33,22 +32,22 @@
   </div>
   <div class="terminal-content">
     <div class="color-grid">
-      <ColorColumn {colors} column={leftColumn} />
-      <ColorColumn {colors} column={rightColumn} />
+      <ColorColumn column={leftColumn} />
+      <ColorColumn column={rightColumn} />
       <div>
         <div
           class="separator"
-          style="background-color: {colors.color7.value};"
+          style="background-color: {$colorStore.color7.value};"
         ></div>
       </div>
       <div>
         <div
           class="separator"
-          style="background-color: {colors.color15.value};"
+          style="background-color: {$colorStore.color15.value};"
         ></div>
       </div>
-      <ColorColumn {colors} column={leftAdditionalColumn} />
-      <ColorColumn {colors} column={rightAdditionalColumn} />
+      <ColorColumn column={leftAdditionalColumn} />
+      <ColorColumn column={rightAdditionalColumn} />
     </div>
   </div>
 </div>
@@ -58,11 +57,11 @@
     border-radius: 18px;
     height: 0.5rem;
     margin-top: 0.5rem;
-    margin-left: 0.25rem;
-    margin-right: 0.25rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
   .terminal {
-    background-color: var(--surface);
+    /*background-color: var(--surface);*/
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -107,7 +106,7 @@
 
   .terminal-content {
     flex: 1;
-    padding: 1rem;
+    padding: 0rem;
     min-height: 0; /* Important for flex children */
   }
 

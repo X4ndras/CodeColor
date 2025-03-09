@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import Card from "@smui/card";
   import Switch from "@smui/switch";
   import Tab, { Label } from "@smui/tab";
@@ -7,99 +6,68 @@
   import Sidebar from "./lib/Sidebar.svelte";
   import CodePreview from "./lib/CodePreview.svelte";
   import ExportPopup from "./lib/ExportPopup.svelte";
-  import type { theme } from "./Types.svelte";
   import ColorPreview from "./lib/ColorPreview.svelte";
+  import { onMount } from "svelte";
+  import { colorStore } from "./stores.svelte";
 
-  let darkMode = $state(true);
   let showSidebar = $state(false);
-  let mounted = $state(false);
   let active = $state("code");
-
-  let colors: theme = $state({
-    color0: { value: "#282828", label: "Color 0 (bg)" },
-    color1: { value: "#cc241d", label: "Color 1" },
-    color2: { value: "#98971a", label: "Color 2" },
-    color3: { value: "#d79921", label: "Color 3" },
-    color4: { value: "#458588", label: "Color 4" },
-    color5: { value: "#b16286", label: "Color 5" },
-    color6: { value: "#689d6a", label: "Color 6" },
-    color7: { value: "#a89984", label: "Color 7" },
-
-    color8: { value: "#928374", label: "Color 8" },
-    color9: { value: "#fb4934", label: "Color 9" },
-    color10: { value: "#b8bb26", label: "Color 10" },
-    color11: { value: "#fabd2f", label: "Color 11" },
-    color12: { value: "#83a598", label: "Color 12" },
-    color13: { value: "#d3869b", label: "Color 13" },
-    color14: { value: "#8ec07c", label: "Color 14" },
-    color15: { value: "#ebdbb2", label: "Color 15 (fg)" },
-
-    color16: { value: "#d65d0e", label: "Color 16" },
-    color17: { value: "#fe8019", label: "Color 17" },
-  });
-
-  onMount(() => {
-    // Read from localStorage on component mount
-    const storedDark = localStorage.getItem("darkMode");
-    if (storedDark !== null) {
-      darkMode = storedDark === "true";
-    }
-    mounted = true;
-    applyTheme();
-  });
+  let mounted = $state(false);
+  let darkMode = $state(false);
 
   function applyTheme() {
     if (!mounted) return;
 
-    const theme = darkMode ? "dark" : "light";
-
-    // Apply theme classes
-    document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.className = theme;
-
-    document.body.className = theme;
-
-    // Apply user colors to root
     const root = document.documentElement;
 
-    root.style.setProperty("--bg-color", colors.color0.value);
-    root.style.setProperty("--text-color", colors.color15.value);
+    root.style.setProperty("--color0", $colorStore.color0.value);
+    root.style.setProperty("--color1", $colorStore.color1.value);
+    root.style.setProperty("--color2", $colorStore.color2.value);
+    root.style.setProperty("--color3", $colorStore.color3.value);
+    root.style.setProperty("--color4", $colorStore.color4.value);
+    root.style.setProperty("--color5", $colorStore.color5.value);
+    root.style.setProperty("--color6", $colorStore.color6.value);
+    root.style.setProperty("--color7", $colorStore.color7.value);
 
-    root.style.setProperty("--color0", colors.color0.value);
-    root.style.setProperty("--color1", colors.color1.value);
-    root.style.setProperty("--color2", colors.color2.value);
-    root.style.setProperty("--color3", colors.color3.value);
-    root.style.setProperty("--color4", colors.color4.value);
-    root.style.setProperty("--color5", colors.color5.value);
-    root.style.setProperty("--color6", colors.color6.value);
-    root.style.setProperty("--color7", colors.color7.value);
+    root.style.setProperty("--color8", $colorStore.color8.value);
+    root.style.setProperty("--color9", $colorStore.color9.value);
+    root.style.setProperty("--color10", $colorStore.color10.value);
+    root.style.setProperty("--color11", $colorStore.color11.value);
+    root.style.setProperty("--color12", $colorStore.color12.value);
+    root.style.setProperty("--color13", $colorStore.color13.value);
+    root.style.setProperty("--color14", $colorStore.color14.value);
+    root.style.setProperty("--color15", $colorStore.color15.value);
 
-    root.style.setProperty("--color8", colors.color8.value);
-    root.style.setProperty("--color9", colors.color9.value);
-    root.style.setProperty("--color10", colors.color10.value);
-    root.style.setProperty("--color11", colors.color11.value);
-    root.style.setProperty("--color12", colors.color12.value);
-    root.style.setProperty("--color13", colors.color13.value);
-    root.style.setProperty("--color14", colors.color14.value);
-    root.style.setProperty("--color15", colors.color15.value);
-
-    root.style.setProperty("--color16", colors.color16.value);
-    root.style.setProperty("--color17", colors.color17.value);
+    root.style.setProperty("--color16", $colorStore.color16.value);
+    root.style.setProperty("--color17", $colorStore.color17.value);
   }
 
-  function toggleTheme() {
-    console.log(`Toggle Theme called`);
-    darkMode = !darkMode;
-    const theme = darkMode ? "dark" : "light";
+  onMount(() => {
+    darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
 
-    // Apply theme directly to document
-    localStorage.setItem("darkMode", darkMode.toString());
-    document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.className = theme;
-    document.body.className = theme;
-    console.log("Theme switched to:", theme, darkMode);
-  }
+  const toggleMode = () => (darkMode = !darkMode);
 </script>
+
+<svelte:head>
+  {#if darkMode === undefined}
+    <link
+      rel="stylesheet"
+      href="public/smui-light.css"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="stylesheet"
+      href="public/smui-dark.css"
+      media="screen and (prefers-color-scheme: dark)"
+    />
+  {:else if darkMode}
+    <link rel="stylesheet" href="public/smui-light.css" media="print" />
+    <link rel="stylesheet" href="public/smui-dark.css" media="screen" />
+  {:else}
+    <link rel="stylesheet" href="public/smui-light.css" />
+  {/if}
+</svelte:head>
 
 <main>
   <div class="header">
@@ -114,37 +82,35 @@
         >
           {showSidebar ? "✕" : "☰"}
         </button>
-        <Switch
-          onSMUISwitchChange={() => toggleTheme}
-          bind:checked={darkMode}
-        />
+        <Switch checked={darkMode} onSMUISwitchChange={toggleMode} />
         <span>🌙</span>
       </div>
-      <ExportPopup bind:colors />
+      <ExportPopup />
     </div>
   </div>
 
   <div class="layout">
-    <Sidebar bind:colors bind:showSidebar />
-
+    <Sidebar bind:showSidebar />
     <div class="preview-section">
-      <TabBar tabs={["code", "color"]} bind:active>
-        {#snippet tab(tab)}
-          <Tab {tab}>
-            <Label>{tab}</Label>
-          </Tab>
-        {/snippet}
-      </TabBar>
+      <div class="tabs-wrapper">
+        <Card>
+          <TabBar tabs={["code", "color"]} bind:active>
+            {#snippet tab(tab)}
+              <Tab {tab}>
+                <Label>{tab}</Label>
+              </Tab>
+            {/snippet}
+          </TabBar>
+        </Card>
+      </div>
 
-      {#if active === "color"}
-        <Card class="full-height">
-          <ColorPreview bind:colors />
-        </Card>
-      {:else if active === "code"}
-        <Card class="full-height">
-          <CodePreview bind:colors />
-        </Card>
-      {/if}
+      <Card>
+        {#if active === "color"}
+          <ColorPreview />
+        {:else if active === "code"}
+          <CodePreview />
+        {/if}
+      </Card>
     </div>
   </div>
 </main>
@@ -160,6 +126,10 @@
     padding-left: calc(var(--sidebar-width) + 2rem);
     padding-right: 0.8rem;
     position: relative;
+  }
+
+  .tabs-wrapper {
+    padding-bottom: 1rem;
   }
 
   .header-controls {
@@ -220,12 +190,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-  }
-
-  .preview-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    border-radius: 16px !important;
   }
 
   @media (max-width: 1024px) {

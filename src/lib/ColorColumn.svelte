@@ -1,17 +1,17 @@
 <script lang="ts">
-  import type { ColorKey, theme } from "../Types.svelte";
+  import type { ColorKey, Theme } from "../Types.svelte";
   import ColorCell from "./ColorCell.svelte";
+  import { colorStore } from "../stores.svelte";
 
-  export let colors: theme;
   export let column: ColorKey[];
 </script>
 
 <div>
   {#each column as colorKeyItem}
-    {#if colors && colors[colorKeyItem.key]}
+    {#if $colorStore && $colorStore[colorKeyItem.key]}
       <ColorCell
-        color={colors[colorKeyItem.key].value}
-        label={colors[colorKeyItem.key].label}
+        color={$colorStore[colorKeyItem.key].value}
+        label={$colorStore[colorKeyItem.key].label}
       />
     {:else}
       <div class="error-cell">Error: {colorKeyItem.key} not found</div>

@@ -1,0 +1,48 @@
+:root {
+  --sidebar-width: 265px;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 1rem;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#app {
+  width: 100%;
+  margin: 0 auto;
+}
+.mdc-tab {
+  /*background-color: var(--card-bg) !important;*/
+}
+
+/* Material UI Card overrides */
+.mdc-card {
+  /*background-color: var(--card-bg) !important;*/
+  /*color: var(--text-color) !important;*/
+  border-radius: 16px !important;
+}
+
+.mdc-dialog__surface {
+  border-radius: 16px !important;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap");
+}
+
+@media (max-width: 1024px) {
+  body {
+    padding: 0.5rem;
+  }
+}

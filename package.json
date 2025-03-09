@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
     "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
-    "smui-theme-light": "smui-theme compile public/smui.css -i src/theme",
+    "smui-theme-light": "smui-theme compile public/smui-light.css -i src/theme",
     "smui-theme-dark": "smui-theme compile public/smui-dark.css -i src/theme/dark"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@mdi/js": "^7.4.47",
+    "@smui/dialog": "^8.0.0-beta.3",
     "@smui/snackbar": "^8.0.0-beta.3",
     "@smui/tab": "^8.0.0-beta.3",
     "@smui/tab-bar": "^8.0.0-beta.3",

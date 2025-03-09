@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link rel="stylesheet" href="public/smui.css" media="(prefers-color-scheme: light)" />
+    <link
+      rel="stylesheet"
+      href="public/smui-light.css"
+      media="(prefers-color-scheme: light)"
+    />
     <link
       rel="stylesheet"
       href="public/smui-dark.css"
@@ -11,16 +15,6 @@
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Code:Color</title>
-    <script>
-      // Pre-hydrate theme - make sure this runs before any components
-      (function() {
-        const darkMode = localStorage.getItem('darkMode') === 'true';
-        const theme = darkMode ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.className = theme;
-        document.body && (document.body.className = theme);
-      })();
-    </script>
   </head>
   <body>
     <div id="app"></div>

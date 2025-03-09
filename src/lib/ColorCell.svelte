@@ -108,8 +108,8 @@
     align-items: center;
     justify-content: center;
     margin-top: 0.5rem;
-    margin-left: 0.25rem;
-    margin-right: 0.25rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 
     font-family: "JetBrains Mono", monospace;
     font-size: 0.8rem;

@@ -2,9 +2,9 @@
   import { onMount } from "svelte";
   import Card from "@smui/card";
   import ColorPicker from "./ColorPicker.svelte";
-  import { type theme, type ThemeColor, colorKeys } from "../Types.svelte";
+  import { colorKeys } from "../Types.svelte";
+  import { colorStore } from "../stores.svelte";
 
-  export let colors: theme;
   export let showSidebar: boolean;
 
   function handleResize() {
@@ -26,10 +26,10 @@
   <Card>
     <div class="color-pickers">
       {#each colorKeys as { key, description, label }}
-        {#if colors && colors[key]}
+        {#if $colorStore && $colorStore[key]}
           <ColorPicker
-            label={colors[key].label}
-            bind:value={colors[key].value}
+            label={$colorStore[key].label}
+            bind:value={$colorStore[key].value}
           />
         {:else}
           <!-- Fallback if color is not defined -->
@@ -51,7 +51,7 @@
     padding: 1rem;
     overflow-y: auto;
     transition: transform 0.3s ease;
-    z-index: 100;
+    z-index: 2;
     transform: translateX(0);
     height: 100vh;
   }
