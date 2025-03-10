@@ -1,156 +1,115 @@
+<!--
+Module
+-->
 <script lang="ts" context="module">
-  import { colorStore } from "../stores.svelte";
-  import type { Theme } from "../Types.svelte";
+  let parsers: Record<string, Parser> = {};
 
-  let colors: Theme;
-  colorStore.subscribe((value) => {
-    colors = value;
-    updateHighlightStyles();
-  });
-
-  function updateHighlightStyles() {
-    const style = document.createElement("style");
-    style.textContent = `
-        .hljs {
-          color: ${colors.fg1}; /* Default text color */
-          background: transparent;
-        }
-
-        /* Variables */
-        .hljs-attr,
-        .hljs-property,
-        .hljs-template-variable,
-        .hljs-params {
-          color: ${colors.color1}; /* red */
-        }
-
-        /* Strings */
-        .hljs-string,
-        .hljs-doctag,
-        .hljs-regexp {
-          color: ${colors.color2}; /* green */
-        }
-
-        /* Numbers */
-        .hljs-number,
-        .hljs-literal {
-          color: ${colors.color16}; /* orange */
-        }
-
-        /* Comments */
-        .hljs-comment,
-        .hljs-quote {
-          color: ${colors.color8}; /* lighter gray */
-          font-style: italic;
-        }
-
-        /* Generics/Types */
-        .hljs-title.class_,
-        .hljs-type,
-        .hljs-built_in {
-          color: ${colors.color3}; /* light yellow */
-        }
-
-        /* Keywords */
-        .hljs-variable,
-        .hljs-keyword {
-          color: ${colors.color5}; /* purple */
-        }
-
-        /* Functions */
-        .hljs-function,
-        .hljs-title.function_ {
-          color: ${colors.color4}; /* blue */
-        }
-
-        /* Operators and punctuation */
-        .hljs-operator,
-        .hljs-punctuation {
-          color: ${colors.fg1}; /* default text color */
-        }
-
-        /* Line numbers */
-        .line-number {
-          color: ${colors.color8} !important; /* darker gray */
-        }
-
-        /* Selection */
-        .hljs ::selection {
-          background-color: ${colors.bg2};
-          color: ${colors.fg0};
-        }
-      `;
-
-    // Remove any existing highlight.js style element
-    const existingStyle = document.getElementById("hljs-theme-override");
-    if (existingStyle) {
-      existingStyle.remove();
-    }
-
-    // Add the new style element
-    style.id = "hljs-theme-override";
-    document.head.appendChild(style);
-  }
-</script>
-
-<script lang="ts">
-  import { onMount } from "svelte";
-  import hljs from "highlight.js/lib/core";
-  import javascript from "highlight.js/lib/languages/javascript";
-  import python from "highlight.js/lib/languages/python";
-  import java from "highlight.js/lib/languages/java";
-  import csharp from "highlight.js/lib/languages/csharp";
-  import rust from "highlight.js/lib/languages/rust";
-  import lua from "highlight.js/lib/languages/lua";
-  import typescript from "highlight.js/lib/languages/typescript";
-  import go from "highlight.js/lib/languages/go";
-  import c from "highlight.js/lib/languages/c";
-  import css from "highlight.js/lib/languages/css";
-  import "highlight.js/styles/github-dark.css";
-  import Button, { Group } from "@smui/button";
-  import { codeSnippets, type CodeSnippets } from "../Snippets.svelte";
-
-  // Tab management
-  let tabs = [
+  const tabs = [
     { id: "rust", name: "Rust" },
-    { id: "lua", name: "Lua" },
+    //{ id: "lua", name: "Lua" },
     { id: "go", name: "Go" },
     { id: "c", name: "C" },
     { id: "typescript", name: "TS" },
     { id: "javascript", name: "JS" },
     { id: "python", name: "Python" },
-    //{ id: "html", name: "HTML" },
     { id: "css", name: "CSS" },
+    //{ id: "html", name: "HTML" },
   ];
-  let selectedTab = tabs[0].id;
-  // Code snippets for each language
-  let highlighted: CodeSnippets = {};
-  onMount(() => {
-    // Register languages
-    hljs.registerLanguage("javascript", javascript);
-    hljs.registerLanguage("python", python);
-    hljs.registerLanguage("java", java);
-    hljs.registerLanguage("csharp", csharp);
-    hljs.registerLanguage("rust", rust);
-    hljs.registerLanguage("lua", lua);
-    hljs.registerLanguage("c", c);
-    hljs.registerLanguage("typescript", typescript);
-    hljs.registerLanguage("go", go);
-    hljs.registerLanguage("css", css);
 
-    updateHighlightStyles();
-
-    // Fix the reactive statement to use the correct parameter format
-    highlighted[selectedTab] = hljs.highlight(codeSnippets[selectedTab], {
-      language: selectedTab,
-    }).value;
-  });
-  function selectTab(tabId: string) {
-    selectedTab = tabId;
-    highlighted[selectedTab] = hljs.highlight(codeSnippets[selectedTab], {
-      language: selectedTab,
-    }).value;
+  function getNodeClassName(type: string): string {
+    console.debug(`getNodeClassName(${type})`);
+    const mappings: { [key: string]: string } = {
+      // Common types
+      string: "ts-string",
+      number: "ts-number",
+      comment: "ts-comment",
+      keyword: "ts-keyword",
+      function: "ts-function",
+      method: "ts-function",
+      property: "ts-property",
+      type: "ts-type",
+      variable: "ts-variable",
+      identifier: "ts-identifier",
+      operator: "ts-operator",
+      punctuation: "ts-punctuation",
+    };
+    return mappings[type] || "";
   }
+
+  function escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  //
+  // Tree Sitter
+  //
+  async function initTreeSitter() {
+    await Parser.init({
+      locateFile(scriptName: string) {
+        return `/${scriptName}`;
+      },
+    });
+
+    // Initialize parsers for each language
+    for (const tab of tabs) {
+      try {
+        const newParser = new Parser();
+        const Lang = await Language.load(
+          `/tree-sitter/tree-sitter-${tab.id}.wasm`,
+        );
+        newParser.setLanguage(Lang);
+        parsers[tab.id] = newParser;
+      } catch (error) {
+        console.error(`Failed to load ${tab.id} parser:`, error);
+      }
+    }
+  }
+
+  function highlightCode(code: string, language: string): string {
+    const parser = parsers[language];
+    if (!parser) {
+      console.warn(`No parser available for ${language}`);
+      return escapeHtml(code);
+    }
+
+    const tree = parser.parse(code);
+    return formatTree(tree?.rootNode, code);
+  }
+
+  function formatTree(node: any, code: string): string {
+    if (node.childCount === 0) {
+      const text = code.substring(node.startIndex, node.endIndex);
+      const className = getNodeClassName(node.type);
+      return className
+        ? `<span class="${className}">${escapeHtml(text)}</span>`
+        : escapeHtml(text);
+    }
+
+    let result = "";
+    let currentIndex = node.startIndex;
+
+    for (let i = 0; i < node.childCount; i++) {
+      const child = node.child(i)!;
+      if (child.startIndex > currentIndex) {
+        result += escapeHtml(code.substring(currentIndex, child.startIndex));
+      }
+      result += formatTree(child, code);
+      currentIndex = child.endIndex;
+    }
+
+    if (currentIndex < node.endIndex) {
+      result += escapeHtml(code.substring(currentIndex, node.endIndex));
+    }
+
+    return result;
+  }
+
+  //
+  // Misc Helper function
+  //
   function addLineNumbers(code: string): string {
     const lines = code.split("\n");
     return lines
@@ -162,6 +121,47 @@
   }
 </script>
 
+<!--
+*************************
+Code Preview
+*************************
+-->
+<script lang="ts">
+  import { onMount } from "svelte";
+  import { Language, Parser } from "web-tree-sitter";
+  import { colorStore } from "../stores.svelte";
+  import type { Theme } from "../Types.svelte";
+  import { codeSnippets } from "../Snippets.svelte";
+  import Button, { Group } from "@smui/button";
+
+  let colors: Theme;
+  let highlighted: { [key: string]: string } = {};
+
+  colorStore.subscribe((value) => {
+    colors = value;
+  });
+
+  let selectedTab = tabs[0].id;
+
+  function selectTab(tabId: string) {
+    selectedTab = tabId;
+    highlighted[selectedTab] = highlightCode(
+      codeSnippets[selectedTab],
+      selectedTab,
+    );
+  }
+
+  onMount(async () => {
+    await initTreeSitter();
+    selectTab(selectedTab);
+  });
+</script>
+
+<!--
+*************************
+HTML
+*************************
+-->
 <div class="code-preview-container">
   <div class="tabs">
     <Group>
@@ -181,7 +181,7 @@
     <pre><code
         >{@html highlighted[selectedTab]
           ? addLineNumbers(highlighted[selectedTab])
-          : addLineNumbers(codeSnippets[selectedTab])}</code
+          : ""}</code
       ></pre>
   </div>
 </div>
@@ -235,14 +235,59 @@
     white-space: pre;
   }
 
-  :global(.hljs) {
-    background-color: transparent !important;
-  }
-
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .tabs {
       flex-wrap: nowrap;
     }
+  }
+
+  :global(.ts-string) {
+    color: var(--color2);
+  }
+
+  :global(.ts-number) {
+    color: var(--color16);
+  }
+
+  :global(.ts-boolean) {
+    color: var(--color16);
+  }
+
+  :global(.ts-comment) {
+    color: var(--color8);
+    font-style: italic;
+  }
+
+  :global(.ts-keyword) {
+    color: var(--color1);
+  }
+
+  :global(.ts-function) {
+    color: var(--color5);
+  }
+
+  :global(.ts-method) {
+    color: var(--color5);
+  }
+
+  :global(.ts-property) {
+    color: var(--color6);
+  }
+
+  :global(.ts-type) {
+    color: var(--color3);
+  }
+
+  :global(.ts-variable) {
+    color: var(--color1);
+  }
+
+  :global(.ts-identifier) {
+    color: var(--color4);
+  }
+
+  :global(.ts-operator) {
+    color: var(--color15);
   }
 </style>
