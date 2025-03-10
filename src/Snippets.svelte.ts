@@ -637,7 +637,8 @@ main()
 //************************
 // TypeScript
 //************************
-codeSnippets.typescript = `// Welcome to Code: Color
+codeSnippets.typescript = `
+// Welcome to Code: Color
 
 interface DataResponse<T> {
   status: string;

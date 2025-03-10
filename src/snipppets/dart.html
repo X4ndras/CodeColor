@@ -1,0 +1,72 @@
+<pre>
+    <span class="comment">// Flutter Syntax Highlighting Example</span>
+
+    <span class="comment">// Importing necessary packages</span>
+    <span class="keyword">import</span> <span class="string">'package:flutter/material.dart'</span>;
+
+    <span class="comment">// Main function to run the app</span>
+    <span class="keyword">void</span> <span class="function">main</span>() {
+        <span class="function">runApp</span>(<span class="class">MyApp</span>());
+    }
+
+    <span class="comment">// Root widget of the app</span>
+    <span class="keyword">class</span> <span class="class">MyApp</span> <span class="keyword">extends</span> <span class="class">StatelessWidget</span> {
+        <span class="comment">// Constructor</span>
+        <span class="keyword">const</span> <span class="function">MyApp</span>({<span class="keyword">super</span>.key});
+
+        <span class="comment">// Build method</span>
+        <span class="keyword">@override</span>
+        <span class="type">Widget</span> <span class="function">build</span>(<span class="type">BuildContext</span> <span class="parameter">context</span>) {
+            <span class="keyword">return</span> <span class="class">MaterialApp</span>(
+                <span class="property">home</span>: <span class="class">MyHomePage</span>(),
+            );
+        }
+    }
+
+    <span class="comment">// Stateful widget example</span>
+    <span class="keyword">class</span> <span class="class">MyHomePage</span> <span class="keyword">extends</span> <span class="class">StatefulWidget</span> {
+        <span class="keyword">const</span> <span class="function">MyHomePage</span>({<span class="keyword">super</span>.key});
+
+        <span class="keyword">@override</span>
+        <span class="type">State</span>&lt;<span class="class">MyHomePage</span>&gt; <span class="function">createState</span>() =&gt; <span class="function">_MyHomePageState</span>();
+    }
+
+    <span class="keyword">class</span> <span class="class">_MyHomePageState</span> <span class="keyword">extends</span> <span class="class">State</span>&lt;<span class="class">MyHomePage</span>&gt; {
+        <span class="keyword">int</span> <span class="variable">_counter</span> = <span class="number">0</span>;
+
+        <span class="comment">// Increment counter method</span>
+        <span class="keyword">void</span> <span class="function">_incrementCounter</span>() {
+            <span class="function">setState</span>(() {
+                <span class="variable">_counter</span>++;
+            });
+        }
+
+        <span class="keyword">@override</span>
+        <span class="type">Widget</span> <span class="function">build</span>(<span class="type">BuildContext</span> <span class="parameter">context</span>) {
+            <span class="keyword">return</span> <span class="class">Scaffold</span>(
+                <span class="property">appBar</span>: <span class="class">AppBar</span>(
+                    <span class="property">title</span>: <span class="class">Text</span>(<span class="string">'Flutter Demo'</span>),
+                ),
+                <span class="property">body</span>: <span class="class">Center</span>(
+                    <span class="property">child</span>: <span class="class">Column</span>(
+                        <span class="property">mainAxisAlignment</span>: <span class="class">MainAxisAlignment</span>.center,
+                        <span class="property">children</span>: &lt;<span class="type">Widget</span>&gt;[
+                            <span class="class">Text</span>(
+                                <span class="string">'You have pressed the button this many times:'</span>,
+                            ),
+                            <span class="class">Text</span>(
+                                <span class="variable">_counter</span>.<span class="function">toString</span>(),
+                                <span class="property">style</span>: <span class="class">Theme</span>.of(<span class="parameter">context</span>).<span class="function">textTheme</span>.<span class="property">headlineMedium</span>,
+                            ),
+                        ],
+                    ),
+                ),
+                <span class="property">floatingActionButton</span>: <span class="class">FloatingActionButton</span>(
+                    <span class="property">onPressed</span>: <span class="function">_incrementCounter</span>,
+                    <span class="property">tooltip</span>: <span class="string">'Increment'</span>,
+                    <span class="property">child</span>: <span class="class">Icon</span>(<span class="class">Icons</span>.add),
+                ),
+            );
+        }
+    }
+</pre>

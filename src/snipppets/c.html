@@ -1,0 +1,81 @@
+<pre>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdio.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;stdlib.h&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;string.h&gt;</span>
+
+<span class="keyword">#define</span> <span class="macro">MIN</span>(<span class="variable">X</span>, <span class="variable">Y</span>) (((<span class="variable">X</span>) < (<span class="variable">Y</span>)) <span class="keyword">?</span> (<span class="variable">X</span>) <span class="keyword">:</span> (<span class="variable">Y</span>))
+
+<span class="comment">/*</span>
+<span class="comment">* Welcome to Code: Color</span>
+<span class="comment">*/</span>
+<span class="keyword">typedef</span> <span class="keyword">struct</span> {
+    <span class="c-buildin">char</span> *<span class="property">name</span>;
+    <span class="c-buildin">int</span> <span class="property">age</span>;
+    <span class="c-buildin">float</span> <span class="property">flying_force</span>;
+} <span class="type">Person</span>;
+
+<span class="comment">// Function to create a new person</span>
+<span class="type">Person</span> <span class="function">create_person</span>(<span class="c-buildin">const char</span> *<span class="parameter">name</span>, <span class="c-buildin">int</span> <span class="parameter">age</span>, <span class="c-buildin">float</span> <span class="parameter">flying_force</span>) {
+    <span class="type">Person</span> <span class="variable">person</span>;
+    <span class="variable">person</span>.<span class="property">name</span> = <span class="function">strdup</span>(<span class="parameter">name</span>);
+    <span class="variable">person</span>.<span class="property">age</span> = <span class="parameter">age</span>;
+    <span class="variable">person</span>.<span class="property">flying_force</span> = <span class="parameter">flying_force</span>;
+    <span class="keyword">return</span> <span class="variable">person</span>;
+}
+
+<span class="comment">// Function to print person details</span>
+<span class="c-buildin">void</span> <span class="function">print_person</span>(<span class="type">const Person</span> *<span class="parameter">person</span>) {
+    <span class="function">printf</span>(<span class="string">"Name: %s, Age: %d, Flying Force: %.2f</span><span class="special">\n</span><span class="string">"</span>,
+    <span class="parameter">person</span><span class="operator">-></span><span class="property">name</span>,
+    <span class="parameter">person</span><span class="operator">-></span><span class="property">age</span>,
+    <span class="parameter">person</span><span class="operator">-></span><span class="property">flying_force</span>);
+}
+
+
+<span class="keyword">typedef enum Direction</span> {
+    <span class="enum-member">D_NORTH</span>,
+    <span class="enum-member">D_EAST</span>,
+    <span class="enum-member">D_SOUTH</span>,
+    <span class="enum-member">D_WEST</span>,
+} <span class="keyword">Direction</span>;
+
+
+<span class="c-buildin">int</span> <span class="function">main</span>() {
+    <span class="comment">// Variable declarations and initializations</span>
+    <span class="c-buildin">int</span> <span class="variable">x</span> = <span class="number">5</span>;
+    <span class="keyword">Direction </span><span class="variable">d</span> = <span class="enum-member">D_SOUTH</span>;
+
+    <span class="comment">// Conditional statements</span>
+    <span class="keyword">if</span> (<span class="macro">MIN</span>(<span class="number">3</span>, <span class="variable">x</span>) == <span class="number">3</span>) {
+        <span class="function">printf</span>(<span class="string">"x is greater than 3</span><span class="special">\n</span><span class="string">"</span>);
+    } <span class="keyword">else</span> {
+        <span class="function">printf</span>(<span class="string">"x is less than 3</span><span class="special">\n</span><span class="string">"</span>);
+    }
+
+    <span class="comment">// Switch statement</span>
+    <span class="keyword">switch</span> (<span class="variable">x</span>) {
+        <span class="keyword">case</span> <span class="number">1</span>:
+            <span class="function">printf</span>(<span class="string">"one</span><span class="special">\n</span><span class="string">"</span>);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">2</span>:
+            <span class="function">printf</span>(<span class="string">"two</span><span class="special">\n</span><span class="string">"</span>);
+            <span class="keyword">break</span>;
+        <span class="keyword">default</span>:
+            <span class="function">printf</span>(<span class="string">"something else</span><span class="special">\n</span><span class="string">"</span>);
+    }
+
+    <span class="comment">// Loops</span>
+    <span class="keyword">for</span> (<span class="c-buildin">int</span> <span class="variable">i</span> = <span class="number">0</span>; <span class="variable">i</span> <span class="operator"><</span> <span class="number">5</span>; <span class="variable">i</span><span class="operator">++</span>) {
+        <span class="function">printf</span>(<span class="string">"i is %d</span><span class="special">\n</span><span class="string">"</span>, <span class="variable">i</span>);
+    }
+
+    <span class="comment">// Creating and using a person</span>
+    <span class="type">Person</span> <span class="variable">person</span> = <span class="function">create_person</span>(<span class="string">"Alice"</span>, <span class="number">30</span>, <span class="number">9999.99</span>);
+    <span class="function">print_person</span>(<span class="operator">&</span><span class="variable">person</span>);
+
+    <span class="comment">// Memory cleanup</span>
+    <span class="function">free</span>(<span class="variable">person</span>.<span class="property">name</span>);
+
+    <span class="keyword">return</span> <span class="number">0</span>;
+}
+</pre>

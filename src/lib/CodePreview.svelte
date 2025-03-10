@@ -1,166 +1,88 @@
-<!--
-Module
--->
-<script lang="ts" context="module">
-  let parsers: Record<string, Parser> = {};
-
-  const tabs = [
-    { id: "rust", name: "Rust" },
-    //{ id: "lua", name: "Lua" },
-    { id: "go", name: "Go" },
-    { id: "c", name: "C" },
-    { id: "typescript", name: "TS" },
-    { id: "javascript", name: "JS" },
-    { id: "python", name: "Python" },
-    { id: "css", name: "CSS" },
-    //{ id: "html", name: "HTML" },
-  ];
-
-  function getNodeClassName(type: string): string {
-    console.debug(`getNodeClassName(${type})`);
-    const mappings: { [key: string]: string } = {
-      // Common types
-      string: "ts-string",
-      number: "ts-number",
-      comment: "ts-comment",
-      keyword: "ts-keyword",
-      function: "ts-function",
-      method: "ts-function",
-      property: "ts-property",
-      type: "ts-type",
-      variable: "ts-variable",
-      identifier: "ts-identifier",
-      operator: "ts-operator",
-      punctuation: "ts-punctuation",
-    };
-    return mappings[type] || "";
-  }
-
-  function escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
-  //
-  // Tree Sitter
-  //
-  async function initTreeSitter() {
-    await Parser.init({
-      locateFile(scriptName: string) {
-        return `/${scriptName}`;
-      },
-    });
-
-    // Initialize parsers for each language
-    for (const tab of tabs) {
-      try {
-        const newParser = new Parser();
-        const Lang = await Language.load(
-          `/tree-sitter/tree-sitter-${tab.id}.wasm`,
-        );
-        newParser.setLanguage(Lang);
-        parsers[tab.id] = newParser;
-      } catch (error) {
-        console.error(`Failed to load ${tab.id} parser:`, error);
-      }
-    }
-  }
-
-  function highlightCode(code: string, language: string): string {
-    const parser = parsers[language];
-    if (!parser) {
-      console.warn(`No parser available for ${language}`);
-      return escapeHtml(code);
-    }
-
-    const tree = parser.parse(code);
-    return formatTree(tree?.rootNode, code);
-  }
-
-  function formatTree(node: any, code: string): string {
-    if (node.childCount === 0) {
-      const text = code.substring(node.startIndex, node.endIndex);
-      const className = getNodeClassName(node.type);
-      return className
-        ? `<span class="${className}">${escapeHtml(text)}</span>`
-        : escapeHtml(text);
-    }
-
-    let result = "";
-    let currentIndex = node.startIndex;
-
-    for (let i = 0; i < node.childCount; i++) {
-      const child = node.child(i)!;
-      if (child.startIndex > currentIndex) {
-        result += escapeHtml(code.substring(currentIndex, child.startIndex));
-      }
-      result += formatTree(child, code);
-      currentIndex = child.endIndex;
-    }
-
-    if (currentIndex < node.endIndex) {
-      result += escapeHtml(code.substring(currentIndex, node.endIndex));
-    }
-
-    return result;
-  }
-
-  //
-  // Misc Helper function
-  //
-  function addLineNumbers(code: string): string {
-    const lines = code.split("\n");
-    return lines
-      .map(
-        (line, index) =>
-          `<span class="line-number">${index}</span><span class="line-content">${line}</span>`,
-      )
-      .join("\n");
-  }
-</script>
-
-<!--
-*************************
-Code Preview
-*************************
--->
 <script lang="ts">
   import { onMount } from "svelte";
-  import { Language, Parser } from "web-tree-sitter";
   import { colorStore } from "../stores.svelte";
   import type { Theme } from "../Types.svelte";
-  import { codeSnippets } from "../Snippets.svelte";
   import Button, { Group } from "@smui/button";
 
+  // Import raw code snippets using Vite's ?raw feature
+  import jsSnippet from "../snipppets/js.html?raw";
+  import tsSnippet from "../snipppets/ts.html?raw";
+  import rustSnippet from "../snipppets/rust.html?raw";
+  import goSnippet from "../snipppets/go.html?raw";
+  import cSnippet from "../snipppets/c.html?raw";
+  import pythonSnippet from "../snipppets/python.html?raw";
+  import cssSnippet from "../snipppets/css.html?raw";
+  import htmlSnippet from "../snipppets/html.html?raw";
+  import luaSnippet from "../snipppets/lua.html?raw";
+
+  const tabs = [
+    { id: "rust", name: "Rust", content: rustSnippet },
+    { id: "lua", name: "Lua", content: luaSnippet },
+    { id: "go", name: "Go", content: goSnippet },
+    { id: "c", name: "C", content: cSnippet },
+    { id: "ts", name: "TS", content: tsSnippet },
+    { id: "js", name: "JS", content: jsSnippet },
+    { id: "python", name: "Python", content: pythonSnippet },
+    { id: "html", name: "HTML", content: htmlSnippet },
+    { id: "css", name: "CSS", content: cssSnippet },
+  ];
+
+  let displayedCode = "";
+  let selectedTab: string = tabs[0].id;
   let colors: Theme;
-  let highlighted: { [key: string]: string } = {};
 
   colorStore.subscribe((value) => {
     colors = value;
   });
 
-  let selectedTab = tabs[0].id;
-
   function selectTab(tabId: string) {
     selectedTab = tabId;
-    highlighted[selectedTab] = highlightCode(
-      codeSnippets[selectedTab],
-      selectedTab,
-    );
+    const tab = tabs.find((t) => t.id === tabId);
+    if (tab) {
+      processSnippet(tab.content);
+    } else {
+      displayedCode = `<div class="error">No snippet available for ${tabId}</div>`;
+    }
   }
 
-  onMount(async () => {
-    await initTreeSitter();
-    selectTab(selectedTab);
+  // Process the snippet and add line numbers
+  function processSnippet(content: string) {
+    if (!content) {
+      displayedCode = `<div class="error">No content available</div>`;
+      return;
+    }
+
+    const lines = content.split("\n");
+    let result = "";
+
+    // Process each line and add line numbers
+    for (let i = 1; i < lines.length; i++) {
+      const lineNumber = i;
+      // Trim whitespace but preserve indentation
+      const lineContent = lines[i] || "&nbsp;"; // Use &nbsp; for empty lines
+
+      result += `<div class="line">
+        <span class="line-number">${lineNumber}</span>
+        <span class="line-content">${lineContent}</span>
+      </div>`;
+    }
+
+    displayedCode = result;
+  }
+
+  onMount(() => {
+    // Initially process the default tab's content
+    const initialTab = tabs.find((t) => t.id === selectedTab);
+    if (initialTab) {
+      processSnippet(initialTab.content);
+    }
   });
 </script>
 
 <!--
-*************************
-HTML
-*************************
+  HTML
+  So i dont overread this part so easlily,
+  since its the smallest
 -->
 <div class="code-preview-container">
   <div class="tabs">
@@ -177,15 +99,12 @@ HTML
       {/each}
     </Group>
   </div>
-  <div class="code-preview">
-    <pre><code
-        >{@html highlighted[selectedTab]
-          ? addLineNumbers(highlighted[selectedTab])
-          : ""}</code
-      ></pre>
-  </div>
+  <div class="code-preview">{@html displayedCode}</div>
 </div>
 
+<!--
+  CSS
+-->
 <style>
   .code-preview-container {
     background: var(--color0);
@@ -197,7 +116,7 @@ HTML
   }
   .tabs {
     display: flex;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--bg2);
     overflow-x: auto;
     scrollbar-width: thin;
     border-radius: 16px 16px 0 0;
@@ -210,84 +129,187 @@ HTML
     font-size: 14px;
     line-height: 1.5;
   }
-  pre {
-    margin: 0;
-    counter-reset: line;
-  }
-  code {
-    counter-reset: line;
-    display: grid;
-    grid-template-columns: max-content 1fr;
+  /* Global styles for code highlighting */
+  :global(.line) {
+    display: flex;
     width: 100%;
+    min-height: 1.5em;
   }
 
   :global(.line-number) {
-    color: var(--fg2);
+    color: var(--fg2, #7f848e);
     text-align: right;
     padding-right: 1em;
     user-select: none;
-    display: inline-block;
-    min-width: 3em;
+    width: 2em;
+    min-width: 2em;
+    border-right: 1px solid var(--bg2, #353b45);
+    margin-right: 0.5em;
+    flex-shrink: 0;
   }
 
   :global(.line-content) {
-    display: inline-block;
     white-space: pre;
   }
 
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .tabs {
-      flex-wrap: nowrap;
-    }
+  :global(.line-content) {
+    white-space: pre;
   }
 
-  :global(.ts-string) {
-    color: var(--color2);
-  }
-
-  :global(.ts-number) {
-    color: var(--color16);
-  }
-
-  :global(.ts-boolean) {
-    color: var(--color16);
-  }
-
-  :global(.ts-comment) {
+  /*
+    Core syntax highlighting classes
+  */
+  :global(.comment) {
     color: var(--color8);
     font-style: italic;
   }
 
-  :global(.ts-keyword) {
+  :global(.keyword) {
+    color: var(--color5);
+    font-weight: normal;
+  }
+
+  :global(.string) {
+    color: var(--color2);
+  }
+
+  :global(.number) {
+    color: var(--color11);
+  }
+
+  :global(.variable) {
     color: var(--color1);
   }
 
-  :global(.ts-function) {
-    color: var(--color5);
-  }
-
-  :global(.ts-method) {
-    color: var(--color5);
-  }
-
-  :global(.ts-property) {
-    color: var(--color6);
-  }
-
-  :global(.ts-type) {
-    color: var(--color3);
-  }
-
-  :global(.ts-variable) {
-    color: var(--color1);
-  }
-
-  :global(.ts-identifier) {
+  :global(.function) {
     color: var(--color4);
   }
 
-  :global(.ts-operator) {
+  :global(.builtin) {
+    color: var(--color6);
+    font-weight: normal;
+  }
+
+  :global(.property) {
+    color: var(--color1);
+  }
+
+  :global(.parameter) {
+    color: var(--color11);
+    font-style: normal;
+  }
+
+  :global(.type),
+  :global(.class) {
+    color: var(--color3);
+    font-weight: normal;
+  }
+
+  :global(.special) {
+    color: var(--color6);
+  }
+
+  :global(.namespace) {
+    color: var(--color3);
+  }
+
+  :global(.operator) {
     color: var(--color15);
+  }
+
+  :global(.enum),
+  :global(.enum-member),
+  :global(.variant) {
+    color: var(--color3);
+  }
+
+  :global(.macro) {
+    color: var(--color9);
+    font-weight: normal;
+  }
+
+  :global(.decorator),
+  :global(.decorator-call) {
+    color: var(--color4);
+  }
+
+  :global(.interface),
+  :global(.trait) {
+    color: var(--color3);
+    font-style: normal;
+  }
+
+  :global(.tag) {
+    color: var(--color1);
+  }
+
+  :global(.attribute) {
+    color: var(--color11);
+  }
+
+  :global(.html-delimiter) {
+    color: var(--color7);
+  }
+
+  :global(.constant) {
+    color: var(--color1);
+    font-weight: normal;
+  }
+
+  :global(.preprocessor) {
+    color: var(--color5);
+  }
+
+  :global(.label) {
+    color: var(--color3);
+  }
+
+  :global(.underscore) {
+    color: var(--color8);
+  }
+
+  :global(.css-unit) {
+    color: var(--color1);
+  }
+
+  :global(.css-tag) {
+    color: var(--color1);
+  }
+
+  :global(.css-macro) {
+    color: var(--color5);
+  }
+
+  :global(.value) {
+    color: var(--color2);
+  }
+
+  :global(.css-modifier) {
+    color: var(--color5);
+  }
+
+  :global(.py-property) {
+    color: var(--color15);
+  }
+
+  :global(.constructor) {
+    color: var(--color4);
+  }
+
+  :global(.lua-function-builtin) {
+    color: var(--color6);
+  }
+
+  :global(.lua-operator) {
+    color: var(--color5);
+  }
+
+  :global(.c-buildin) {
+    color: var(--color6);
+  }
+
+  :global(.error) {
+    color: var(--color1);
+    font-weight: bold;
   }
 </style>

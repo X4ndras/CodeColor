@@ -1,0 +1,93 @@
+<pre>
+<span class="comment">// Welcome to Code: Color</span>
+
+<span class="keyword">interface</span> <span class="type">DataResponse</span>&lt;<span class="type">T</span>&gt; {
+  <span class="property">status</span>: <span class="type">string</span>;
+  <span class="property">data</span>: <span class="type">T</span>;
+}
+
+<span class="keyword">class</span> <span class="class">Person</span>&lt;<span class="type">T</span> = <span class="type">number</span>&gt; {
+  <span class="keyword">private</span> <span class="variable">privateField</span>: <span class="type">T</span>;
+
+  <span class="keyword">constructor</span>(
+    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="parameter">name</span>: <span class="type">string</span>,
+    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="parameter">age</span>: <span class="type">T</span>,
+    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="parameter">flyingForce</span>: <span class="type">number</span> = <span class="number">9999.99</span>
+  ) {
+    <span class="builtin">this</span>.<span class="variable">privateField</span> = <span class="parameter">age</span>;
+  }
+
+  <span class="variable">speak</span> = (): <span class="type">void</span> => {
+    <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">`Hello, my name is ${</span><span class="builtin">this</span>.<span class="variable">name</span><span class="string">}`</span>);
+  }
+
+  <span class="keyword">static</span> <span class="function">createDefault</span>(): <span class="type">Person</span> {
+    <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">Person</span>(<span class="string">"Alice"</span>, <span class="number">30</span>);
+  }
+}
+
+<span class="special">async</span> <span class="keyword">function</span> <span class="function">fetchData</span>&lt;<span class="type">T</span>&gt;(<span class="parameter">url</span>: <span class="type">string</span>): <span class="type">Promise</span>&lt;<span class="type">DataResponse</span>&lt;<span class="type">T</span>&gt;&gt; {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> <span class="variable">response</span> = <span class="special">await</span> <span class="function">fetch</span>(<span class="parameter">url</span>);
+    <span class="keyword">return</span> <span class="special">await</span> <span class="variable">response</span>.<span class="function">json</span>();
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="class">Error</span>(<span class="string">`Failed to fetch: ${</span><span class="variable">error</span><span class="string">}`</span>);
+  }
+}
+
+<span class="keyword">const</span> <span class="function">main</span> = <span class="special">async</span> (): <span class="type">Promise</span>&lt;<span class="type">void</span>&gt; => {
+  <span class="comment">// Type annotations</span>
+  <span class="keyword">let</span> <span class="variable">x</span>: <span class="type">number</span> = <span class="number">5</span>;
+
+  <span class="comment">// Conditional logic with type narrowing</span>
+  <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="variable">x</span> === <span class="string">"number"</span> && <span class="variable">x</span> > <span class="number">3</span>) {
+    <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"x is greater than 3"</span>);
+  }
+
+  <span class="comment">// Generic array</span>
+  <span class="keyword">const</span> <span class="variable">numbers</span>: <span class="type">Array</span>&lt;<span class="type">number</span>&gt; = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+
+  <span class="comment">// Array methods with type inference</span>
+  <span class="keyword">const</span> <span class="variable">doubled</span> = <span class="variable">numbers</span>.<span class="function">map</span>((<span class="parameter">n</span>): <span class="type">number</span> => <span class="parameter">n</span> * <span class="number">2</span>);
+  <span class="keyword">const</span> <span class="variable">filtered</span> = <span class="variable">numbers</span>.<span class="function">filter</span>((<span class="parameter">n</span>): <span class="type">boolean</span> => <span class="parameter">n</span> % <span class="number">2</span> === <span class="number">0</span>);
+
+  <span class="comment">// Using the generic class</span>
+  <span class="keyword">const</span> <span class="variable">person</span> = <span class="keyword">new</span> <span class="class">Person</span>&lt;<span class="type">number</span>&gt;(<span class="string">"Alice"</span>, <span class="number">30</span>);
+  <span class="variable">person</span>.<span class="function">speak</span>();
+
+  <span class="comment">// Destructuring with type annotations</span>
+  <span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">age</span> }: { <span class="property">name</span>: <span class="type">string</span>; <span class="property">age</span>: <span class="type">number</span> } = {
+    <span class="property">name</span>: <span class="string">"Alice"</span>,
+    <span class="property">age</span>: <span class="number">30</span>
+  };
+
+  <span class="comment">// Union types</span>
+  <span class="keyword">type</span> <span class="type">Status</span> = <span class="string">"pending"</span> | <span class="string">"success"</span> | <span class="string">"error"</span>;
+  <span class="keyword">let</span> <span class="variable">status</span>: <span class="type">Status</span> = <span class="string">"pending"</span>;
+
+  <span class="comment">// Enum example</span>
+  <span class="keyword">enum</span> <span class="enum">Direction</span> {
+    <span class="enum-member">Up</span> = <span class="string">"UP"</span>,
+    <span class="enum-member">Down</span> = <span class="string">"DOWN"</span>,
+    <span class="enum-member">Left</span> = <span class="string">"LEFT"</span>,
+    <span class="enum-member">Right</span> = <span class="string">"RIGHT"</span>
+  }
+
+  <span class="comment">// Type guards</span>
+  <span class="keyword">function</span> <span class="function">isString</span>(<span class="parameter">value</span>: <span class="type">unknown</span>): <span class="parameter">value</span> <span class="keyword">is</span> <span class="type">string</span> {
+    <span class="keyword">return</span> <span class="keyword">typeof</span> <span class="parameter">value</span> === <span class="string">"string"</span>;
+  }
+
+  <span class="comment">// Async/await with error handling</span>
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> <span class="variable">data</span> = <span class="special">await</span> <span class="function">fetchData</span>&lt;<span class="type">number</span>[]&gt;(<span class="string">"https://api.example.com/data"</span>);
+    <span class="builtin">console</span>.<span class="function">log</span>(<span class="variable">data</span>);
+  } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+    <span class="keyword">if</span> (<span class="variable">error</span> <span class="keyword">instanceof</span> <span class="class">Error</span>) {
+      <span class="builtin">console</span>.<span class="function">error</span>(<span class="variable">error</span>.<span class="property">message</span>);
+    }
+  }
+};
+
+<span class="function">main</span>().<span class="function">catch</span>(<span class="builtin">console</span>.<span class="function">error</span>);
+</pre>

@@ -1,0 +1,103 @@
+<pre>
+<span class="comment">// Modules and advanced JavaScript features</span>
+<span class="keyword">import</span> { <span class="type">EventEmitter</span> } <span class="keyword">from</span> <span class="string">'events'</span>;
+
+<span class="comment">/*</span>
+<span class="comment">* Welcome to Code: Color</span>
+<span class="comment">*/</span>
+<span class="keyword">class</span> <span class="class">Person</span> {
+    <span class="comment">// Private field</span>
+    <span class="variable">#privateField</span>;
+
+    <span class="keyword">constructor</span>(<span class="parameter">name</span>, <span class="parameter">age</span>, <span class="parameter">flyingForce</span>) {
+        <span class="builtin">this</span>.<span class="variable">name</span> = <span class="parameter">name</span>;
+        <span class="builtin">this</span>.<span class="variable">age</span> = <span class="parameter">age</span>;
+        <span class="builtin">this</span>.<span class="variable">flyingForce</span> = <span class="parameter">flyingForce</span>;
+    }
+
+    <span class="comment">// Method with arrow function syntax</span>
+    <span class="variable">speak</span> = () => {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">`Hello, my name is</span> ${<span class="builtin">this</span>.<span class="variable">name</span>}<span class="string">`</span>);
+    }
+
+    <span class="comment">// Static method</span>
+    <span class="keyword">static</span> <span class="function">createDefault</span>() {
+        <span class="keyword">return</span> <span class="keyword">new</span> <span class="class">Person</span>(<span class="string">"Alice"</span>, <span class="number">30</span>, <span class="number">9999.99</span>);
+    }
+}
+
+<span class="keyword">const</span> <span class="function">main</span> = () => {
+    <span class="comment">// Conditional logic</span>
+    <span class="keyword">let</span> <span class="variable">x</span> = <span class="number">5</span>;
+
+    <span class="keyword">if</span> (<span class="variable">x</span> > <span class="number">3</span>) {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"x is greater than 3"</span>);
+    } <span class="keyword">else if</span> (<span class="variable">x</span> === <span class="number">3</span>) {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"x is 3"</span>);
+    } <span class="keyword">else</span> {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"x is less than 3"</span>);
+    }
+
+    <span class="comment">// Switch statement</span>
+    <span class="keyword">switch</span>(<span class="variable">x</span>) {
+        <span class="keyword">case</span> <span class="number">1</span>:
+            <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"one"</span>);
+            <span class="keyword">break</span>;
+        <span class="keyword">case</span> <span class="number">2</span>:
+            <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"two"</span>);
+            <span class="keyword">break</span>;
+        <span class="keyword">default</span>:
+            <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">"something else"</span>);
+    }
+
+    <span class="comment">// Loops with modern syntax</span>
+    <span class="keyword">for</span> (<span class="keyword">let</span> <span class="variable">i</span> = <span class="number">0</span>; <span class="variable">i</span> < <span class="number">5</span>; <span class="variable">i</span>++) {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">`i is </span>${<span class="variable">i</span>}<span class="string">`</span>);
+    }
+
+    <span class="comment">// Functional loop</span>
+    <span class="keyword">const</span> <span class="variable">numbers</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+    <span class="variable">numbers</span>.<span class="function">forEach</span>(<span class="variable">num</span> => {
+        <span class="builtin">console</span>.<span class="function">log</span>(<span class="variable">num</span>);
+    });
+
+    <span class="comment">// Creating an instance and using methods</span>
+    <span class="keyword">const</span> <span class="variable">person</span> = <span class="keyword">new</span> <span class="class">Person</span>(
+        <span class="string">"Alice"</span>,
+        <span class="number">30</span>,
+        <span class="number">9999.99</span>
+    );
+    <span class="variable">person</span>.<span class="function">speak</span>();
+
+    <span class="comment">// Destructuring and spread operator</span>
+    <span class="keyword">const</span> { <span class="variable">name</span>, <span class="variable">age</span> } = <span class="variable">person</span>;
+    <span class="builtin">console</span>.<span class="function">log</span>(<span class="string">`</span>${<span class="variable">name</span>}<span class="string"> is </span>${<span class="variable">age</span>} <span class="string">years old`</span>);
+
+    <span class="special">async</span> <span class="keyword">function</span> <span class="function">fetchData</span>() {
+        <span class="keyword">try</span> {
+            <span class="keyword">const</span> <span class="variable">response</span> = <span class="special">await</span> <span class="function">fetch</span>(<span class="string">'https://api.example.com/data'</span>);
+            <span class="keyword">const</span> <span class="variable">data</span> = <span class="special">await</span> <span class="variable">response</span>.<span class="function">json</span>();
+            <span class="builtin">console</span>.<span class="function">log</span>(<span class="variable">data</span>);
+        } <span class="keyword">catch</span> (<span class="variable">error</span>) {
+            <span class="builtin">console</span>.<span class="function">error</span>(<span class="string">'Error fetching data'</span>, <span class="variable">error</span>);
+        }
+    }
+};
+
+<span class="comment">// Generator function example</span>
+<span class="keyword">function</span>* <span class="function">numberGenerator</span>() {
+    <span class="keyword">yield</span> <span class="number">1</span>;
+    <span class="keyword">yield</span> <span class="number">2</span>;
+    <span class="keyword">yield</span> <span class="number">3</span>;
+}
+
+<span class="comment">// Proxy example</span>
+<span class="keyword">const</span> <span class="variable">handler</span> = {
+    <span class="function">get</span>: <span class="keyword">function</span>(<span class="parameter">target</span>, <span class="parameter">prop</span>) {
+        <span class="keyword">return</span> <span class="parameter">prop</span> <span class="keyword">in</span> <span class="parameter">target</span> ? <span class="parameter">target</span>[<span class="parameter">prop</span>] : <span class="number">42</span>;
+    }
+};
+
+<span class="comment">// Call the main function</span>
+<span class="builtin">main</span>();
+</pre>

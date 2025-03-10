@@ -1,4 +1,6 @@
-// Welcome to Code: Color
+/*
+* Welcome to Code: Color
+*/
 use std::collections::HashMap;
 use async_trait::async_trait;
 use tokio::time::{sleep, Duration};

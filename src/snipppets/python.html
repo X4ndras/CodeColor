@@ -1,0 +1,60 @@
+<pre>
+<span class="comment"># Welcome to Code: Color</span>
+
+<span class="comment"># Importing modules</span>
+<span class="keyword">import</span> <span class="module">math</span>
+<span class="keyword">from</span> <span class="module">datetime</span> <span class="keyword">import</span> <span class="variable">datetime</span>
+
+<span class="comment"># Defining a class with a constructor and a decorator</span>
+<span class="keyword">class</span> <span class="class">Person</span>:
+    <span class="comment"># Constructor</span>
+    <span class="keyword">def</span> <span class="constructor">__init__</span>(<span class="py-property">self</span>, <span class="parameter">name</span>, <span class="parameter">age</span>):
+        <span class="py-property">self</span>.<span class="property">name</span>: <span class="builtin">str</span> = <span class="parameter">name</span>
+        <span class="py-property">self</span>.<span class="property">age</span>: <span class="builtin">int</span> = <span class="parameter">age</span>
+
+    <span class="comment"># Method with a decorator</span>
+    <span class="decorator">@<span class="decorator-call">staticmethod</span></span>
+    <span class="keyword">def</span> <span class="function">greet</span>():
+        <span class="builtin">print</span>(<span class="string">"Hello from the Person class!"</span>)
+
+    <span class="keyword">def</span> <span class="function">__secret</span>(<span class="py-property">self</span>):
+        <span class="builtin">print</span>(<span class="string">f"Psst... I am </span>{<span class="py-property">self</span>.<span class="variable">name</span>}<span class="string">"</span>)
+
+    <span class="comment"># Method using a property decorator</span>
+    <span class="decorator">@<span class="decorator-call">property</span></span>
+    <span class="keyword">def</span> <span class="function">is_adult</span>(<span class="py-property">self</span>):
+        <span class="py-property">self</span>.<span class="function">__secret</span>()
+        <span class="keyword">return</span> <span class="py-property">self</span>.<span class="property">age</span> &gt;= <span class="number">18</span>
+
+<span class="comment"># Creating an instance</span>
+<span class="variable">alice</span> = <span class="class">Person</span>(<span class="string">"Alice"</span>, <span class="number">30</span>)
+
+<span class="comment"># Accessing methods and properties</span>
+<span class="variable">alice</span>.<span class="function">greet</span>()
+<span class="builtin">print</span>(<span class="string">"Is Alice an adult?"</span>, <span class="variable">alice</span>.<span class="function">is_adult</span>)
+
+<span class="comment"># Function with a decorator</span>
+<span class="decorator">@<span class="decorator-call">classmethod</span></span>
+<span class="keyword">def</span> <span class="function">from_birth_year</span>(<span class="py-property">cls</span>, <span class="parameter">name</span>, <span class="parameter">birth_year</span>):
+    <span class="keyword">return</span> <span class="py-property">cls</span>(<span class="parameter">name</span>, <span class="variable">datetime</span>.<span class="function">now</span>().<span class="variable">year</span> - <span class="parameter">birth_year</span>)
+
+<span class="comment"># Control structures</span>
+<span class="keyword">if</span> <span class="variable">alice</span>.<span class="property">age</span> &gt; <span class="number">25</span>:
+    <span class="builtin">print</span>(<span class="string">"Alice is older than 25"</span>)
+<span class="keyword">else</span>:
+    <span class="builtin">print</span>(<span class="string">"Alice is younger than 25"</span>)
+
+<span class="comment"># Loop example</span>
+<span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="function">range</span>(<span class="number">5</span>):
+    <span class="builtin">print</span>(<span class="string">f"i is </span>{<span class="number">5</span>}<span class="string">"</span>)
+
+<span class="comment"># Lambda and map function</span>
+<span class="variable">squares</span> = <span class="function">map</span>(<span class="keyword">lambda</span> <span class="variable">x</span>: <span class="variable">x</span> ** <span class="number">2</span>, <span class="function">range</span>(<span class="number">10</span>))
+<span class="builtin">print</span>(<span class="function">list</span>(<span class="variable">squares</span>))
+
+<span class="comment"># Error handling</span>
+<span class="keyword">try</span>:
+    <span class="builtin">print</span>(<span class="variable">math</span>.<span class="function">sqrt</span>(-<span class="number">1</span>))
+<span class="keyword">except</span> <span class="builtin">ValueError</span> <span class="keyword">as</span> <span class="variable">e</span>:
+    <span class="builtin">print</span>(<span class="string">"Error:"</span>, <span class="variable">e</span>)
+</pre>

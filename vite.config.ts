@@ -7,7 +7,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["web-tree-sitter"],
   },
-  assetsInclude: ["**/*.wasm"],
+  assetsInclude: ["**/*.wasm", "**/*.html"],
   server: {
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin",

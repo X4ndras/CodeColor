@@ -1,0 +1,188 @@
+<pre>
+<span class="comment">/* Welcome to Code: Color */</span>
+<span class="comment">/* Global Reset and Base Styles */</span>
+<span class="special">*</span>, <span class="special">*</span>::<span class="css-macro">before</span>, <span class="special">*</span>::<span class="css-macro">after</span> {
+    <span class="property">box-sizing</span>: <span class="value">border-box</span>;
+    <span class="property">margin</span>: <span class="number">0</span>;
+    <span class="property">padding</span>: <span class="number">0</span>;
+}
+
+:<span class="css-macro">root</span> {
+    <span class="variable">--primary-color</span>: #<span class="string">6200ee</span>;
+    <span class="variable">--secondary-color</span>: #<span class="string">03dac6</span>;
+    <span class="variable">--background-color</span>: #<span class="string">ffffff</span>;
+    <span class="variable">--text-color</span>: #<span class="string">333333</span>;
+    <span class="variable">--spacing-unit</span>: <span class="number">1</span><span class="css-unit">rem</span>;
+}
+
+<span class="css-tag">body</span> {
+    <span class="property">font-family</span>: <span class="string">'Inter'</span>, <span class="value">sans-serif</span>;
+    <span class="property">line-height</span>: <span class="number">1.6</span>;
+    <span class="property">color</span>: <span class="function">var</span>(<span class="variable">--text-color</span>);
+    <span class="property">background-color</span>: <span class="function">var</span>(<span class="variable">--background-color</span>);
+}
+
+<span class="comment">/* Layout Components */</span>
+<span class="type">.container</span> {
+    <span class="property">max-width</span>: <span class="number">1200</span><span class="css-unit">px</span>;
+    <span class="property">margin</span>: <span class="number">0</span> <span class="value">auto</span>;
+    <span class="property">padding</span>: <span class="number">0</span> <span class="function">var</span>(<span class="variable">--spacing-unit</span>);
+}
+
+<span class="comment">/* Header and Navigation */</span>
+<span class="type">.site-header</span> {
+    <span class="property">background-color</span>: <span class="function">var</span>(<span class="variable">--primary-color</span>);
+    <span class="property">padding</span>: <span class="number">1</span><span class="css-unit">rem</span> <span class="number">0</span>;
+    <span class="property">box-shadow</span>: <span class="number">0</span> <span class="number">2</span><span class="css-unit">px</span> <span class="number">4</span><span class="css-unit">px</span> <span class="function">rgba</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.1</span>);
+}
+
+<span class="type">.main-nav</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">justify-content</span>: <span class="value">space-between</span>;
+    <span class="property">align-items</span>: <span class="value">center</span>;
+    <span class="property">max-width</span>: <span class="number">1200</span><span class="css-unit">px</span>;
+    <span class="property">margin</span>: <span class="number">0</span> <span class="value">auto</span>;
+    <span class="property">padding</span>: <span class="number">0</span> <span class="function">var</span>(<span class="variable">--spacing-unit</span>);
+}
+
+<span class="type">.nav-links</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">gap</span>: <span class="number">2</span><span class="css-unit">rem</span>;
+    <span class="property">list-style</span>: <span class="value">none</span>;
+}
+
+<span class="type">.nav-links</span> <span class="css-tag">a</span> {
+    <span class="property">color</span>: <span class="value">white</span>;
+    <span class="property">text-decoration</span>: <span class="value">none</span>;
+    <span class="property">transition</span>: <span class="value">color</span> <span class="number">0.3</span><span class="css-unit">s</span> <span class="value">ease</span>;
+}
+
+<span class="type">.nav-links</span> <span class="css-tag">a</span>:<span class="css-macro">hover</span> {
+    <span class="property">color</span>: <span class="function">var</span>(<span class="variable">--secondary-color</span>);
+}
+
+<span class="comment">/* Hero Section */</span>
+<span class="type">.hero</span> {
+    <span class="property">text-align</span>: <span class="value">center</span>;
+    <span class="property">padding</span>: <span class="number">4</span><span class="css-unit">rem</span> <span class="number">0</span>;
+    <span class="property">background</span>: <span class="function">linear-gradient</span>(<span class="number">135</span><span class="css-unit">deg</span>, <span class="function">var</span>(<span class="variable">--primary-color</span>), <span class="function">var</span>(<span class="variable">--secondary-color</span>));
+    <span class="property">color</span>: <span class="value">white</span>;
+}
+
+<span class="type">.hero</span> <span class="css-tag">h1</span> {
+    <span class="property">font-size</span>: <span class="number">3</span><span class="css-unit">rem</span>;
+    <span class="property">margin-bottom</span>: <span class="number">1</span><span class="css-unit">rem</span>;
+}
+
+<span class="comment">/* Buttons */</span>
+<span class="type">.cta-button</span> {
+    <span class="property">background-color</span>: <span class="function">var</span>(<span class="variable">--secondary-color</span>);
+    <span class="property">color</span>: <span class="value">white</span>;
+    <span class="property">border</span>: <span class="value">none</span>;
+    <span class="property">padding</span>: <span class="number">1</span><span class="css-unit">rem</span> <span class="number">2</span><span class="css-unit">rem</span>;
+    <span class="property">border-radius</span>: <span class="number">4</span><span class="css-unit">px</span>;
+    <span class="property">cursor</span>: <span class="value">pointer</span>;
+    <span class="property">transition</span>: <span class="value">transform</span> <span class="number">0.3</span><span class="css-unit">s</span> <span class="value">ease</span>;
+}
+
+<span class="type">.cta-button</span>:<span class="css-macro">hover</span> {
+    <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">-2</span><span class="css-unit">px</span>);
+}
+
+<span class="comment">/* Feature Cards */</span>
+<span class="type">.features</span> {
+    <span class="property">display</span>: <span class="value">grid</span>;
+    <span class="property">grid-template-columns</span>: <span class="function">repeat</span>(<span class="value">auto-fit</span>, <span class="function">minmax</span>(<span class="number">250</span><span class="css-unit">px</span>, <span class="number">1</span><span class="css-unit">fr</span>));
+    <span class="property">gap</span>: <span class="number">2</span><span class="css-unit">rem</span>;
+    <span class="property">padding</span>: <span class="number">4</span><span class="css-unit">rem</span> <span class="number">0</span>;
+}
+
+<span class="type">.feature-card</span> {
+    <span class="property">padding</span>: <span class="number">2</span><span class="css-unit">rem</span>;
+    <span class="property">border-radius</span>: <span class="number">8</span><span class="css-unit">px</span>;
+    <span class="property">background-color</span>: <span class="value">white</span>;
+    <span class="property">box-shadow</span>: <span class="number">0</span> <span class="number">4</span><span class="css-unit">px</span> <span class="number">6</span><span class="css-unit">px</span> <span class="function">rgba</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.1</span>);
+    <span class="property">transition</span>: <span class="value">transform</span> <span class="number">0.3</span><span class="css-unit">s</span> <span class="value">ease</span>;
+}
+
+<span class="type">.feature-card</span>:<span class="css-macro">hover</span> {
+    <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">-5</span><span class="css-unit">px</span>);
+}
+
+<span class="comment">/* Contact Form */</span>
+<span class="type">.contact-form</span> {
+    <span class="property">display</span>: <span class="value">flex</span>;
+    <span class="property">flex-direction</span>: <span class="value">column</span>;
+    <span class="property">gap</span>: <span class="number">1</span><span class="css-unit">rem</span>;
+    <span class="property">max-width</span>: <span class="number">600</span><span class="css-unit">px</span>;
+    <span class="property">margin</span>: <span class="number">4</span><span class="css-unit">rem</span> <span class="value">auto</span>;
+}
+
+<span class="type">.contact-form</span> <span class="css-tag">input</span>,
+<span class="type">.contact-form</span> <span class="css-tag">textarea</span> {
+    <span class="property">padding</span>: <span class="number">0.8</span><span class="css-unit">rem</span>;
+    <span class="property">border</span>: <span class="number">1</span><span class="css-unit">px</span> <span class="value">solid</span> #<span class="string">ddd</span>;
+    <span class="property">border-radius</span>: <span class="number">4</span><span class="css-unit">px</span>;
+}
+
+<span class="type">.contact-form</span> <span class="css-tag">textarea</span> {
+    <span class="property">min-height</span>: <span class="number">150</span><span class="css-unit">px</span>;
+}
+
+<span class="comment">/* Footer */</span>
+<span class="type">.site-footer</span> {
+    <span class="property">background-color</span>: #<span class="string">f5f5f5</span>;
+    <span class="property">padding</span>: <span class="number">2</span><span class="css-unit">rem</span> <span class="number">0</span>;
+    <span class="property">text-align</span>: <span class="value">center</span>;
+    <span class="property">margin-top</span>: <span class="number">4</span><span class="css-unit">rem</span>;
+}
+
+<span class="comment">/* Responsive Design */</span>
+<span class="css-macro">@media</span> (<span class="property">max-width</span>: <span class="number">768</span><span class="css-unit">px</span>) {
+    <span class="type">.nav-links</span> {
+        <span class="property">display</span>: <span class="value">none</span>;
+    }
+
+    <span class="type">.hero</span> <span class="css-tag">h1</span> {
+        <span class="property">font-size</span>: <span class="number">2</span><span class="css-unit">rem</span>;
+    }
+
+    <span class="type">.features</span> {
+        <span class="property">grid-template-columns</span>: <span class="number">1</span><span class="css-unit">fr</span>;
+    }
+}
+
+<span class="comment">/* Animations */</span>
+<span class="css-macro">@keyframes</span> <span class="value">fadeIn</span> {
+    <span class="value">from</span> {
+        <span class="property">opacity</span>: <span class="number">0</span>;
+        <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">20</span><span class="css-unit">px</span>);
+    }
+    <span class="value">to</span> {
+        <span class="property">opacity</span>: <span class="number">1</span>;
+        <span class="property">transform</span>: <span class="function">translateY</span>(<span class="number">0</span>);
+    }
+}
+
+<span class="type">.feature-card</span> {
+    <span class="property">animation</span>: <span class="value">fadeIn</span> <span class="number">0.5</span><span class="css-unit">s</span> <span class="value">ease-out</span> <span class="value">forwards</span>;
+}
+
+<span class="comment">/* Custom Scrollbar */</span>
+::<span class="css-macro">-webkit-scrollbar</span> {
+    <span class="property">width</span>: <span class="number">8</span><span class="css-unit">px</span>;
+}
+
+::<span class="css-macro">-webkit-scrollbar-track</span> {
+    <span class="property">background</span>: #<span class="string">f1f1f1</span>;
+}
+
+::<span class="css-macro">-webkit-scrollbar-thumb</span> {
+    <span class="property">background</span>: <span class="function">var</span>(<span class="variable">--primary-color</span>);
+    <span class="property">border-radius</span>: <span class="number">4</span><span class="css-unit">px</span>;
+}
+
+::<span class="css-macro">-webkit-scrollbar-thumb</span>:<span class="css-macro">hover</span> {
+    <span class="property">background</span>: <span class="function">var</span>(<span class="variable">--secondary-color</span>);
+}
+</pre>
