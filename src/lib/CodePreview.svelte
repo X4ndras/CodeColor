@@ -30,10 +30,18 @@
   let displayedCode = "";
   let selectedTab: string = tabs[0].id;
   let colors: Theme;
+  let containerElement: HTMLElement;
 
-  colorStore.subscribe((value) => {
-    colors = value;
-  });
+  // Update the CSS variables when colors change
+  $: {
+    colors = $colorStore;
+    if (containerElement) {
+      // Update all CSS variables from the theme
+      Object.entries(colors).forEach(([key, value]) => {
+        containerElement.style.setProperty(`--${key}`, value);
+      });
+    }
+  }
 
   function selectTab(tabId: string) {
     selectedTab = tabId;
@@ -76,6 +84,13 @@
     if (initialTab) {
       processSnippet(initialTab.content);
     }
+    
+    // Initial setup of CSS variables
+    if (containerElement) {
+      Object.entries(colors).forEach(([key, value]) => {
+        containerElement.style.setProperty(`--${key}`, value);
+      });
+    }
   });
 </script>
 
@@ -84,7 +99,7 @@
   So i dont overread this part so easlily,
   since its the smallest
 -->
-<div class="code-preview-container">
+<div class="code-preview-container" bind:this={containerElement}>
   <div class="tabs">
     <Group>
       {#each tabs as tab}
@@ -305,7 +320,7 @@
   }
 
   :global(.c-buildin) {
-    color: var(--color6);
+    color: var (--color6);
   }
 
   :global(.error) {
