@@ -8,34 +8,55 @@
   import ExportPopup from "./lib/ExportPopup.svelte";
   import ColorPreview from "./lib/ColorPreview.svelte";
   import { onMount } from "svelte";
-  import { colorStore } from "./stores.svelte";
+  import { colorStore, darkMode } from "./stores.svelte";
   import { colorKeys } from "./Types.svelte";
-  import { mdiWeatherSunny } from "@mdi/js";
-  import Button from "@smui/button";
 
   let showSidebar = $state(false);
   let active = $state("code");
-  let darkMode = $state(false);
 
   function applyTheme() {
     const root = document.documentElement;
-    // Get all keys from the color store
-    //
+
+    // 1. Set all basic color variables from the store
     for (const { key, description, label } of colorKeys) {
       root.style.setProperty(`--${key}`, $colorStore[key]);
     }
+
+    // 2. Set mode-specific CSS variables
+    if ($darkMode) {
+      root.style.setProperty("--mdc-theme-surface", $colorStore.bg1);
+      root.style.setProperty("--mdc-theme-on-primary", $colorStore.fg0);
+      root.style.setProperty("--mdc-theme-on-secondary", $colorStore.fg0);
+      root.style.setProperty("--mdc-theme-on-surface", $colorStore.color15);
+      // Always set the app background
+      root.style.setProperty("--app-background", $colorStore.color0);
+    } else {
+      root.style.setProperty("--mdc-theme-surface", $colorStore.fg1);
+      root.style.setProperty("--mdc-theme-on-primary", $colorStore.bg0);
+      root.style.setProperty("--mdc-theme-on-secondary", $colorStore.bg0);
+      root.style.setProperty("--mdc-theme-on-surface", $colorStore.color0);
+      // Always set the app background
+      root.style.setProperty("--app-background", $colorStore.color15);
+    }
+
+    // 3. Set primary SMUI theme variables
+    root.style.setProperty("--mdc-theme-primary", $colorStore.color1);
+    root.style.setProperty("--mdc-theme-secondary", $colorStore.color2);
+    root.style.setProperty("--mdc-theme-error", $colorStore.color9);
   }
 
-  onMount(() => {
+  $effect(() => {
     applyTheme();
-    darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
-  const toggleMode = () => (darkMode = !darkMode);
+  onMount(() => {
+    $darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme();
+  });
 </script>
 
 <svelte:head>
-  {#if darkMode === undefined}
+  {#if $darkMode === undefined}
     <link
       rel="stylesheet"
       href="public/smui-light.css"
@@ -46,7 +67,7 @@
       href="public/smui-dark.css"
       media="screen and (prefers-color-scheme: dark)"
     />
-  {:else if darkMode}
+  {:else if $darkMode}
     <link rel="stylesheet" href="public/smui-light.css" media="print" />
     <link rel="stylesheet" href="public/smui-dark.css" media="screen" />
   {:else}
@@ -67,7 +88,12 @@
         >
           {showSidebar ? "✕" : "☰"}
         </button>
-        <Switch checked={darkMode} onSMUISwitchChange={toggleMode} />
+        <Switch
+          checked={$darkMode}
+          onSMUISwitchChange={() => {
+            $darkMode = !$darkMode;
+          }}
+        />
         <span>🌙</span>
       </div>
       <ExportPopup />
@@ -144,15 +170,13 @@
     text-align: center;
     color: var(--text-color);
     margin: 0;
-    font-size: 1.5rem;
   }
 
   .toggle-sidebar {
     position: fixed;
-    top: 1rem;
+    top: .8rem;
     left: 1rem;
     z-index: 101;
-    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     color: var(--text-color);
     width: 2.5rem;
@@ -185,9 +209,6 @@
       margin-bottom: 0.8rem;
     }
 
-    h1 {
-      font-size: 1.2rem;
-    }
 
     .toggle-sidebar {
       display: flex;

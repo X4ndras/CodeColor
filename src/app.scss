@@ -21,14 +21,9 @@ body {
   width: 100%;
   margin: 0 auto;
 }
-.mdc-tab {
-  /*background-color: var(--card-bg) !important;*/
-}
 
 /* Material UI Card overrides */
 .mdc-card {
-  /*background-color: var(--card-bg) !important;*/
-  /*color: var(--text-color) !important;*/
   border-radius: 16px !important;
 }
 
@@ -45,4 +40,50 @@ body {
   body {
     padding: 0.5rem;
   }
+}
+
+/* Override SMUI hardcoded background colors */
+html, body {
+  background-color: var(--app-background) !important;
+  transition: background-color 0.3s ease;
+}
+
+.smui-button--color-secondary {
+  background-color: var(--mdc-theme-surface) !important;
+  color: var(--mdc-theme-on-secondary) !important;
+}
+// Add this at the bottom
+.mdc-button {
+  //background-color: var(--mdc-theme-surface) !important;
+  //color: var(--mdc-button-ink-color-primary, var(--mdc-theme-on-primary)) !important;
+  transition: background-color 0.3s, color 0.3s !important;
+}
+
+.mdc-button--unelevated.mdc-button--secondary {
+  //background-color: var(--mdc-button-fill-color-secondary, var(--mdc-theme-secondary)) !important;
+  //color: var(--mdc-button-ink-color-secondary, var(--mdc-theme-on-secondary)) !important;
+}
+
+.mdc-tab .mdc-tab__text-label {
+  //color: var(--mdc-tab-text-label-color-default) !important;
+  transition: color 0.3s !important;
+}
+
+.mdc-tab--active .mdc-tab__text-label {
+  //color: var(--mdc-tab-active-text-label-color) !important;
+}
+
+.mdc-tab-indicator .mdc-tab-indicator__content {
+  //background-color: var(--mdc-tab-indicator-active-color) !important;
+  transition: background-color 0.3s !important;
+}
+
+.mdc-dialog .mdc-dialog__content {
+  //color: var(--mdc-dialog-content-ink-color) !important;
+  transition: color 0.3s !important;
+}
+
+.mdc-dialog .mdc-dialog__container {
+  //background-color: var(--mdc-dialog-container-color) !important;
+  //transition: background-color 0.3s !important;
 }

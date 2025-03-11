@@ -15,6 +15,7 @@
 
   let exportFormat = $state("json");
   let exportContent = $state("");
+  let rawExportContent = $state(""); // Add this to store raw content
   let importError = "";
   let toast = $state({ show: false, message: "", type: "success" });
   let openDialog = $state(false);
@@ -26,6 +27,7 @@
 
   function generateJSON() {
     const jsonString = JSON.stringify($colorStore, null, 2);
+    rawExportContent = jsonString; // Store the raw content
     exportContent = hljs.highlight(jsonString, { language: "json" }).value;
   }
 
@@ -35,11 +37,13 @@
       .join("\n");
 
     const cssString = `:root {\n${cssProperties}\n}`;
+    rawExportContent = cssString; // Store the raw content
     exportContent = hljs.highlight(cssString, { language: "css" }).value;
   }
 
   function downloadFile() {
-    const blob = new Blob([exportContent], { type: "text/plain" });
+    // Use the raw content instead of the highlighted HTML
+    const blob = new Blob([rawExportContent], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -52,8 +56,9 @@
   }
 
   function copyToClipboard() {
+    // Use the raw content for clipboard too
     navigator.clipboard
-      .writeText(exportContent)
+      .writeText(rawExportContent)
       .then(() => {
         showToast("Copied to clipboard", "success");
       })
@@ -107,8 +112,6 @@
 
         // Validate the imported theme structure
         const requiredKeys = [
-          "background",
-          "text",
           "color0",
           "color1",
           "color2",

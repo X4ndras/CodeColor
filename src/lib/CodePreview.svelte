@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { colorStore } from "../stores.svelte";
+  import { colorStore, darkMode } from "../stores.svelte";
   import type { Theme } from "../Types.svelte";
   import Button, { Group } from "@smui/button";
+  import { getContext } from "svelte";
 
   // Import raw code snippets using Vite's ?raw feature
   import jsSnippet from "../snipppets/js.html?raw";
@@ -36,10 +37,21 @@
   $: {
     colors = $colorStore;
     if (containerElement) {
-      // Update all CSS variables from the theme
+      // set syntax highlighting colors
       Object.entries(colors).forEach(([key, value]) => {
         containerElement.style.setProperty(`--${key}`, value);
       });
+
+      const tabs = containerElement.getElementsByClassName("tabs") as HTMLCollectionOf<HTMLElement>;
+      // set code preview background color
+      if ($darkMode) {
+        containerElement.style.backgroundColor = colors.bg0;
+        tabs[0].style.backgroundColor = colors.bg1;
+      }
+      else {
+        containerElement.style.backgroundColor = colors.fg0;
+        tabs[0].style.backgroundColor = colors.fg1;
+      }
     }
   }
 
@@ -84,7 +96,7 @@
     if (initialTab) {
       processSnippet(initialTab.content);
     }
-    
+
     // Initial setup of CSS variables
     if (containerElement) {
       Object.entries(colors).forEach(([key, value]) => {
@@ -122,16 +134,14 @@
 -->
 <style>
   .code-preview-container {
-    background: var(--color0);
-    color: var(--color15);
     display: flex;
     flex-direction: column;
-    border-radius: 0px 0px 8px 8px;
+    border-radius: 16px;
     overflow: hidden;
   }
   .tabs {
     display: flex;
-    border-bottom: 1px solid var(--bg2);
+    border-bottom: 1px solid var(--app-border);
     overflow-x: auto;
     scrollbar-width: thin;
     border-radius: 16px 16px 0 0;

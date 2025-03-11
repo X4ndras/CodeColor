@@ -23,6 +23,7 @@
 </script>
 
 <div class="sidebar" class:sidebar-hidden={!showSidebar}>
+  <div class="card-container">
   <Card>
     <div class="color-pickers">
       {#each colorKeys as { key, description, label }}
@@ -38,22 +39,31 @@
       {/each}
     </div>
   </Card>
+  </div>
 </div>
 
 <style>
+  .card-container {
+    margin-bottom: 2rem;
+  }
   .sidebar {
     width: var(--sidebar-width);
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
-    background-color: var(--bg-color);
     padding: 1rem;
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
     transition: transform 0.3s ease;
     z-index: 2;
     transform: translateX(0);
     height: 100vh;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
   }
 
   .sidebar-hidden {
@@ -61,7 +71,7 @@
   }
 
   .color-pickers {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     padding: 1rem;
     display: flex;
     flex-direction: column;

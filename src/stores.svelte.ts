@@ -1,6 +1,9 @@
 import { writable } from "svelte/store";
 import type { Theme } from "./Types.svelte";
 
+export const darkMode = writable<boolean>(false);
+
+// one dark pro
 export const colorStore = writable<Theme>({
   // Base colors (0-7)
   color0: "#282c34", // Background
@@ -37,7 +40,8 @@ export const colorStore = writable<Theme>({
   fg2: "#7f848e", // Muted foreground
 });
 
-/* GruvBox
+/*
+//GruvBox
 export const colorStore = writable<Theme>({
   color0: "#282828",
   color1: "#cc241d",
