@@ -2,7 +2,8 @@
   import hljs from "highlight.js/lib/core";
   import json from "highlight.js/lib/languages/json";
   import css from "highlight.js/lib/languages/css";
-  import { colorStore } from "../stores.svelte";
+  import { colorStore, darkMode } from "../stores.svelte";
+  import { colorKeys } from "../Types.svelte";
   import Button, { Group, Icon, Label } from "@smui/button";
   import {
     mdiContentCopy,
@@ -12,13 +13,19 @@
   } from "@mdi/js";
   import Dialog, { Content, Title, Actions } from "@smui/dialog";
   import { onMount } from "svelte";
+  import Snackbar, {
+    Actions as SnackbarActions,
+    Label as SnackbarLabel,
+  } from "@smui/snackbar";
 
   let exportFormat = $state("json");
   let exportContent = $state("");
   let rawExportContent = $state(""); // Add this to store raw content
   let importError = "";
-  let toast = $state({ show: false, message: "", type: "success" });
+  let snackbar = $state({ message: "", type: "success" });
   let openDialog = $state(false);
+  let previewWindow: HTMLElement;
+  let snackbarWithOpen: Snackbar;
 
   function changeExportContent(format: string) {
     exportFormat = format;
@@ -52,7 +59,7 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast("Theme downloaded successfully", "success");
+    showSnackbar("Theme downloaded successfully", "success");
   }
 
   function copyToClipboard() {
@@ -60,19 +67,18 @@
     navigator.clipboard
       .writeText(rawExportContent)
       .then(() => {
-        showToast("Copied to clipboard", "success");
+        showSnackbar("Copied to clipboard", "success");
       })
       .catch((err) => {
-        showToast("Failed to copy to clipboard", "error");
+        showSnackbar("Failed to copy to clipboard", "error");
         console.error("Copy failed:", err);
       });
   }
 
-  function showToast(message: any, type = "success") {
-    toast = { show: true, message, type };
-    setTimeout(() => {
-      toast = { ...toast, show: false };
-    }, 3000);
+  function showSnackbar(message: any, type = "success") {
+    snackbarWithOpen.close();
+    snackbar = { message, type };
+    snackbarWithOpen.forceOpen();
   }
 
   function parseCSS(cssContent: any) {
@@ -81,6 +87,7 @@
     let match;
 
     while ((match = regex.exec(cssContent)) !== null) {
+      // Remove the "--" prefix that was added during export
       const themeProperty: string = match[1] as string;
       const themeValue = match[2].trim();
       themeData[themeProperty] = themeValue;
@@ -110,33 +117,17 @@
           throw new Error("Unsupported file format");
         }
 
-        // Validate the imported theme structure
-        const requiredKeys = [
-          "color0",
-          "color1",
-          "color2",
-          "color3",
-          "color4",
-          "color5",
-          "color6",
-          "color7",
-          "color8",
-          "color9",
-          "color10",
-          "color11",
-          "color12",
-          "color13",
-          "color14",
-          "color15",
-        ];
+        // Get all required keys from colorKeys array
+        const requiredKeys = colorKeys.map((colorKey) => colorKey.key);
 
+        // Check for missing keys
         const missingKeys = requiredKeys.filter(
           (key) => !(key in importedTheme),
         );
 
         if (missingKeys.length > 0) {
           importError = `Invalid theme format. Missing properties: ${missingKeys.join(", ")}`;
-          showToast(importError, "error");
+          showSnackbar(importError, "error");
           return;
         }
 
@@ -144,21 +135,32 @@
         $colorStore = { ...importedTheme };
 
         importError = "";
-        showToast("Theme imported successfully", "success");
+        showSnackbar("Theme imported successfully", "success");
       } catch (error) {
         importError = "Failed to parse file. Please check the format.";
-        showToast(importError, "error");
+        showSnackbar(importError, "error");
         console.error("Import error:", error);
       }
     };
 
     reader.onerror = () => {
       importError = "Failed to read file. Please try again.";
-      showToast(importError, "error");
+      showSnackbar(importError, "error");
     };
 
     reader.readAsText(file);
   }
+
+  // Update preview window background color based on theme
+  $effect(() => {
+    if (previewWindow && $colorStore) {
+      if ($darkMode) {
+        previewWindow.style.backgroundColor = $colorStore.bg0;
+      } else {
+        previewWindow.style.backgroundColor = $colorStore.fg0;
+      }
+    }
+  });
 
   onMount(() => {
     hljs.registerLanguage("json", json);
@@ -189,7 +191,7 @@
         <Label>CSS</Label>
       </Button>
     </Group>
-    <div class="preview-window">
+    <div class="preview-window" bind:this={previewWindow}>
       <pre><code>{@html exportContent}</code></pre>
     </div>
   </Content>
@@ -243,32 +245,24 @@
     <Label>Export</Label>
   </Button>
 
-  {#if toast.show}
-    <div
-      class="toast"
-      class:toast-success={toast.type === "success"}
-      class:toast-error={toast.type === "error"}
-    >
-      <div class="toast-icon">
-        {#if toast.type === "success"}
-          ✓
-        {:else}
-          ✗
-        {/if}
-      </div>
-      <div class="toast-message">{toast.message}</div>
-    </div>
-  {/if}
+  <Snackbar
+    bind:this={snackbarWithOpen}
+    class={snackbar.type === "error" ? "error-snackbar" : ""}
+  >
+    <SnackbarLabel>{snackbar.message}</SnackbarLabel>
+    <SnackbarActions>
+      <Button>Dismiss</Button>
+    </SnackbarActions>
+  </Snackbar>
 </div>
 
 <style>
   .preview-window {
-    background-color: var(--bg-color);
     padding-top: 0.5rem;
     border-radius: 16px;
-    border: 1px solid var(--border-color);
     max-height: 50vh; /* Set a maximum height */
     overflow-y: auto; /* Add vertical scroll to preview window */
+    padding: 1rem;
   }
 
   :global(.mdc-dialog__content) {
@@ -284,49 +278,9 @@
     font-family: "JetBrains Mono", monospace;
     font-size: 0.9rem;
     color: var(--text-color);
-    background: #000;
   }
 
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    animation: slideUp 0.3s ease-out forwards;
-  }
-
-  .toast-success {
-    background-color: #27c93f;
-  }
-
-  .toast-error {
-    background-color: #ff5f56;
-  }
-
-  .toast-icon {
-    margin-right: 0.5rem;
-    font-weight: bold;
-  }
-
-  .toast-message {
-    font-size: 0.9rem;
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translate(-50%, 20px);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
+  :global(.error-snackbar) {
+    --mdc-snackbar-container-color: #ff5f56;
   }
 </style>

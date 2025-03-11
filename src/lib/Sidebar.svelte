@@ -1,11 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Card from "@smui/card";
+  import Tab, { Label } from "@smui/tab";
   import ColorPicker from "./ColorPicker.svelte";
+  import SyntaxMapping from "./SyntaxMapping.svelte";
   import { colorKeys } from "../Types.svelte";
   import { colorStore } from "../stores.svelte";
+  import TabBar from "@smui/tab-bar";
 
   export let showSidebar: boolean;
+  let activeTab = "colors"; // Default to colors tab
 
   function handleResize() {
     if (window.innerWidth >= 1024) {
@@ -24,21 +28,35 @@
 
 <div class="sidebar" class:sidebar-hidden={!showSidebar}>
   <div class="card-container">
-  <Card>
-    <div class="color-pickers">
-      {#each colorKeys as { key, description, label }}
-        {#if $colorStore && $colorStore[key]}
-          <ColorPicker
-            label={`${label} ${description}`}
-            bind:value={$colorStore[key]}
-          />
-        {:else}
-          <!-- Fallback if color is not defined -->
-          <p>Error: {key} not found</p>
-        {/if}
-      {/each}
-    </div>
-  </Card>
+    <Card>
+      <div class="tab-container">
+        <TabBar tabs={["colors", "syntax"]} bind:active={activeTab}>
+          {#snippet tab(tab)}
+            <Tab {tab}>
+              <Label>{tab.charAt(0).toUpperCase() + tab.slice(1)}</Label>
+            </Tab>
+          {/snippet}
+        </TabBar>
+      </div>
+
+      {#if activeTab === "colors"}
+        <div class="color-pickers">
+          {#each colorKeys as { key, description, label }}
+            {#if $colorStore && $colorStore[key]}
+              <ColorPicker
+                label={`${label} ${description}`}
+                bind:value={$colorStore[key]}
+              />
+            {:else}
+              <!-- Fallback if color is not defined -->
+              <p>Error: {key} not found</p>
+            {/if}
+          {/each}
+        </div>
+      {:else if activeTab === "syntax"}
+        <SyntaxMapping />
+      {/if}
+    </Card>
   </div>
 </div>
 
@@ -46,6 +64,12 @@
   .card-container {
     margin-bottom: 2rem;
   }
+
+  .tab-container {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--bg1);
+  }
+
   .sidebar {
     width: var(--sidebar-width);
     position: fixed;
@@ -55,7 +79,7 @@
     padding: 1rem;
     overflow-y: scroll;
     scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
     transition: transform 0.3s ease;
     z-index: 2;
     transform: translateX(0);

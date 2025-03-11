@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { colorStore, darkMode } from "../stores.svelte";
+  import { colorStore, darkMode, syntaxMapping } from "../stores.svelte";
   import type { Theme } from "../Types.svelte";
   import Button, { Group } from "@smui/button";
   import { getContext } from "svelte";
@@ -33,22 +33,28 @@
   let colors: Theme;
   let containerElement: HTMLElement;
 
-  // Update the CSS variables when colors change
+  // Update the CSS variables when colors or syntax mappings change
   $: {
     colors = $colorStore;
     if (containerElement) {
-      // set syntax highlighting colors
+      // set syntax highlighting colors based on the syntax mapping
+      Object.entries($syntaxMapping).forEach(([token, colorKey]) => {
+        containerElement.style.setProperty(`--${token}`, colors[colorKey]);
+      });
+
+      // Keep the existing code for setting other CSS variables
       Object.entries(colors).forEach(([key, value]) => {
         containerElement.style.setProperty(`--${key}`, value);
       });
 
-      const tabs = containerElement.getElementsByClassName("tabs") as HTMLCollectionOf<HTMLElement>;
+      const tabs = containerElement.getElementsByClassName(
+        "tabs",
+      ) as HTMLCollectionOf<HTMLElement>;
       // set code preview background color
       if ($darkMode) {
         containerElement.style.backgroundColor = colors.bg0;
         tabs[0].style.backgroundColor = colors.bg1;
-      }
-      else {
+      } else {
         containerElement.style.backgroundColor = colors.fg0;
         tabs[0].style.backgroundColor = colors.fg1;
       }

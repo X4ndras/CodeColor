@@ -43,13 +43,41 @@
   }
 
   export const colorKeys: ColorKey[] = [
-    { key: "color0" as keyof Theme, description: "(bg)", label: "Color 0" },
-    { key: "color1" as keyof Theme, description: "", label: "Color 1" },
-    { key: "color2" as keyof Theme, description: "", label: "Color 2" },
-    { key: "color3" as keyof Theme, description: "", label: "Color 3" },
-    { key: "color4" as keyof Theme, description: "", label: "Color 4" },
-    { key: "color5" as keyof Theme, description: "", label: "Color 5" },
-    { key: "color6" as keyof Theme, description: "", label: "Color 6" },
+    {
+      key: "color0" as keyof Theme,
+      description: "(black bg)",
+      label: "Color 0",
+    },
+    {
+      key: "color1" as keyof Theme,
+      description: "(light red)",
+      label: "Color 1",
+    },
+    {
+      key: "color2" as keyof Theme,
+      description: "(light green)",
+      label: "Color 2",
+    },
+    {
+      key: "color3" as keyof Theme,
+      description: "(light yellow)",
+      label: "Color 3",
+    },
+    {
+      key: "color4" as keyof Theme,
+      description: "(light blue)",
+      label: "Color 4",
+    },
+    {
+      key: "color5" as keyof Theme,
+      description: "(light magenta)",
+      label: "Color 5",
+    },
+    {
+      key: "color6" as keyof Theme,
+      description: "(light cyan)",
+      label: "Color 6",
+    },
     {
       key: "color7" as keyof Theme,
       description: "(light grey)",
@@ -60,17 +88,53 @@
       description: "(dark grey)",
       label: "Color 8",
     },
-    { key: "color9" as keyof Theme, description: "", label: "Color 9" },
-    { key: "color10" as keyof Theme, description: "", label: "Color 10" },
-    { key: "color11" as keyof Theme, description: "", label: "Color 11" },
-    { key: "color12" as keyof Theme, description: "", label: "Color 12" },
-    { key: "color13" as keyof Theme, description: "", label: "Color 13" },
-    { key: "color14" as keyof Theme, description: "", label: "Color 14" },
-    { key: "color15" as keyof Theme, description: "(fg)", label: "Color 15" },
+    {
+      key: "color9" as keyof Theme,
+      description: "(dark red)",
+      label: "Color 9",
+    },
+    {
+      key: "color10" as keyof Theme,
+      description: "(dark green)",
+      label: "Color 10",
+    },
+    {
+      key: "color11" as keyof Theme,
+      description: "(dark yellow)",
+      label: "Color 11",
+    },
+    {
+      key: "color12" as keyof Theme,
+      description: "(dark blue)",
+      label: "Color 12",
+    },
+    {
+      key: "color13" as keyof Theme,
+      description: "(dark magenta)",
+      label: "Color 13",
+    },
+    {
+      key: "color14" as keyof Theme,
+      description: "(dark cyan)",
+      label: "Color 14",
+    },
+    {
+      key: "color15" as keyof Theme,
+      description: "(white fg)",
+      label: "Color 15",
+    },
 
     // special
-    { key: "color16" as keyof Theme, description: "", label: "Color 16" },
-    { key: "color17" as keyof Theme, description: "", label: "Color 17" },
+    {
+      key: "color16" as keyof Theme,
+      description: "(light orange)",
+      label: "Color 16",
+    },
+    {
+      key: "color17" as keyof Theme,
+      description: "(dark orange)",
+      label: "Color 17",
+    },
     {
       key: "bg0" as keyof Theme,
       description: "(bg darker)",
@@ -102,4 +166,18 @@
       label: "Color 20",
     },
   ];
+
+  export type SyntaxToken =
+    | "comment"
+    | "keyword"
+    | "string"
+    | "number"
+    | "variable"
+    | "function"
+    | "type"
+    | "class"
+    | "parameter"
+    | "operator"
+    | "builtin"
+    | "property";
 </script>

@@ -25,6 +25,7 @@
   "devDependencies": {
     "@mdi/js": "^7.4.47",
     "@smui/dialog": "^8.0.0-beta.3",
+    "@smui/select": "^8.0.0-beta.3",
     "@smui/snackbar": "^8.0.0-beta.3",
     "@smui/tab": "^8.0.0-beta.3",
     "@smui/tab-bar": "^8.0.0-beta.3",

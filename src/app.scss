@@ -43,7 +43,8 @@ body {
 }
 
 /* Override SMUI hardcoded background colors */
-html, body {
+html,
+body {
   background-color: var(--app-background) !important;
   transition: background-color 0.3s ease;
 }
@@ -56,7 +57,9 @@ html, body {
 .mdc-button {
   //background-color: var(--mdc-theme-surface) !important;
   //color: var(--mdc-button-ink-color-primary, var(--mdc-theme-on-primary)) !important;
-  transition: background-color 0.3s, color 0.3s !important;
+  transition:
+    background-color 0.3s,
+    color 0.3s !important;
 }
 
 .mdc-button--unelevated.mdc-button--secondary {
@@ -86,4 +89,8 @@ html, body {
 .mdc-dialog .mdc-dialog__container {
   //background-color: var(--mdc-dialog-container-color) !important;
   //transition: background-color 0.3s !important;
+}
+
+.mdc-select__anchor {
+  max-height: 3rem !important;
 }

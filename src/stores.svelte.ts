@@ -1,7 +1,22 @@
 import { writable } from "svelte/store";
-import type { Theme } from "./Types.svelte";
+import type { Theme, SyntaxToken } from "./Types.svelte";
 
 export const darkMode = writable<boolean>(false);
+
+export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
+  comment: "color8", // Dark gray
+  keyword: "color5", // Magenta
+  string: "color2", // Green
+  number: "color11", // Bright Yellow
+  variable: "color1", // Red
+  function: "color4", // Blue
+  type: "color3", // Yellow
+  class: "color3", // Yellow
+  parameter: "color11", // Bright Yellow
+  operator: "color15", // White (fg)
+  builtin: "color6", // Cyan
+  property: "color1", // Red
+});
 
 // one dark pro
 export const colorStore = writable<Theme>({
