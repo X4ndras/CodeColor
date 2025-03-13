@@ -1,17 +1,22 @@
 <script lang="ts">
   import { mdiClose, mdiContentCopy, mdiGrid } from "@mdi/js";
   import tinycolor from "tinycolor2";
-
-  export let color: string;
-  export let label: string;
   import Snackbar, { Actions, Label } from "@smui/snackbar";
   import IconButton, { Icon } from "@smui/icon-button";
+  
+  export let color: string;
+  export let label: string;
+  // Replace event dispatcher with callback prop
+  export let onColorChange: (newColor: string) => void = () => {};
 
   let snackbarWithClose: Snackbar;
   let showShades = false;
-  let shades: string[] = [];
+  let shades: Array<{ hex: string; isBase: boolean }> = [];
+  let baseColor: string = color;
+  let copiedColor: string = color;
 
   function copyColor(hex: string) {
+    copiedColor = hex;
     snackbarWithClose.close();
     navigator.clipboard.writeText(hex).catch((err) => {
       console.error("Failed to copy color:", err);
@@ -21,28 +26,72 @@
 
   function generateShades(baseColor: string) {
     const color = tinycolor(baseColor);
-    return [
-      color.clone().lighten(50).toHexString(),
-      color.clone().lighten(40).toHexString(),
-      color.clone().lighten(30).toHexString(),
-      color.clone().lighten(20).toHexString(),
-      color.clone().lighten(10).toHexString(),
-      color.clone().lighten(5).toHexString(),
-      baseColor,
-      color.clone().darken(5).toHexString(),
-      color.clone().darken(10).toHexString(),
-      color.clone().darken(20).toHexString(),
-      color.clone().darken(30).toHexString(),
-      color.clone().darken(40).toHexString(),
-      color.clone().darken(50).toHexString(),
-    ];
+    const hsl = color.toHsl();
+
+    // Get the base lightness
+    const baseLightness = hsl.l;
+
+    // Total number of shades to generate (excluding base)
+    const totalShades = 14;
+
+    // Calculate number of steps for lighter and darker shades
+    const stepsToWhite = Math.round(totalShades * (1 - baseLightness));
+    const stepsToBlack = Math.round(totalShades * baseLightness);
+
+    const shades = [];
+
+    // Generate lighter shades (toward white)
+    if (stepsToWhite > 0) {
+      const lightnessStep = (0.97 - baseLightness) / stepsToWhite;
+      for (let i = 1; i <= stepsToWhite; i++) {
+        const lightness = Math.min(0.97, baseLightness + i * lightnessStep);
+        const shade = tinycolor({
+          h: hsl.h,
+          s: hsl.s,
+          l: lightness,
+        }).toHexString();
+        shades.unshift({ hex: shade, isBase: false });
+      }
+    }
+
+    // Add base color
+    shades.push({ hex: baseColor, isBase: true });
+
+    // Generate darker shades (toward black)
+    if (stepsToBlack > 0) {
+      const lightnessStep = (baseLightness - 0.03) / stepsToBlack;
+      for (let i = 1; i <= stepsToBlack; i++) {
+        const lightness = Math.max(0.03, baseLightness - i * lightnessStep);
+        const shade = tinycolor({
+          h: hsl.h,
+          s: hsl.s,
+          l: lightness,
+        }).toHexString();
+        shades.push({ hex: shade, isBase: false });
+      }
+    }
+
+    return shades.reverse();
   }
 
   function toggleShades(hex: string) {
-    if (!showShades) {
-      shades = generateShades(hex);
-    }
+    if (!showShades) shades = generateShades(hex);
     showShades = !showShades;
+  }
+
+  function onShadeClick(shade: string, event: MouseEvent) {
+    // If shift key is pressed, just copy the color
+    if (event.shiftKey) {
+      copyColor(shade);
+      return;
+    }
+
+    // Set it as new base color and regenerate shades
+    baseColor = shade;
+    shades = generateShades(baseColor);
+    
+    // Use callback instead of dispatch
+    onColorChange(shade);
   }
 </script>
 
@@ -77,18 +126,22 @@
     <div class="shades-container">
       {#each shades as shade}
         <button
-          class="shade"
-          style="background-color: {shade}"
-          on:click={() => copyColor(shade)}
+          class="shade {shade.isBase ? 'base-shade' : ''}"
+          style="background-color: {shade.hex}"
+          on:click={(e) => onShadeClick(shade.hex, e)}
+          title={shade.isBase ? "Base color: " + shade.hex : shade.hex}
         >
-          <span class="shade-label">{shade}</span>
+          {#if shade.isBase}
+            <div class="base-indicator"></div>
+          {/if}
+          <span class="shade-label">{shade.hex}</span>
         </button>
       {/each}
     </div>
   {/if}
 
   <Snackbar bind:this={snackbarWithClose}>
-    <Label>Copied {color} to clipboard!</Label>
+    <Label>Copied {copiedColor} to clipboard!</Label>
     <Actions>
       <IconButton>
         <Icon tag="svg" viewBox="0 0 24 24">
@@ -213,5 +266,22 @@
 
   .shade:hover .shade-label {
     opacity: 1;
+  }
+
+  .shade.base-shade {
+    position: relative;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
+  .base-indicator {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
   }
 </style>

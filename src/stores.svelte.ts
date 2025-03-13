@@ -18,6 +18,43 @@ export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
   property: "color1", // Red
 });
 
+// firefly
+export const colorStore = writable<Theme>({
+  // Base colors (0-7)
+  color0: "#1c1a1c", // Background
+  color1: "#A64B3A", // Red
+  color2: "#91b794", // Green
+  color3: "#D48B1D", // Yellow
+  color4: "#625C70", // Blue
+  color5: "#CC666B", // Magenta/Purple
+  color6: "#79999d", // Cyan
+  color7: "#b9bfca", // Light Gray
+
+  // Bright colors (8-15)
+  color8: "#5c6370", // Dark Gray
+  color9: "#BD5644", // Bright Red
+  color10: "#B5E5B9", // Bright Green
+  color11: "#F1D6AB", // Bright Yellow/Orange
+  color12: "#888198", // Bright Blue
+  color13: "#E0A3A6", // Bright Magenta/Purple
+  color14: "#A1CCD1", // Bright Cyan
+  color15: "#E3DEDE", // White Text
+
+  // Special colors
+  color16: "#d19a66", // Orange
+  color17: "#e5c07b", // Bright Orange
+
+  // Background variants
+  bg0: "#21252b", // Darker background
+  bg1: "#2c313a", // Lighter background
+  bg2: "#353b45", // Selection background
+
+  // Foreground variants
+  fg0: "#dcdfe4", // Brighter foreground
+  fg1: "#9da5b4", // Default foreground
+  fg2: "#978787", // Muted foreground
+});
+/*
 // one dark pro
 export const colorStore = writable<Theme>({
   // Base colors (0-7)
@@ -55,7 +92,6 @@ export const colorStore = writable<Theme>({
   fg2: "#7f848e", // Muted foreground
 });
 
-/*
 //GruvBox
 export const colorStore = writable<Theme>({
   color0: "#282828",

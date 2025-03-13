@@ -66,7 +66,6 @@
     align-items: center;
     gap: 0.5rem;
     flex: 1;
-    margin-bottom: 0.5rem;
   }
 
   .color-option {
@@ -83,8 +82,8 @@
   }
 
   .color-preview.current {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 
   .current-color {

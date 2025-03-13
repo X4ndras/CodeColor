@@ -50,32 +50,32 @@
     },
     {
       key: "color1" as keyof Theme,
-      description: "(light red)",
+      description: "(base red)",
       label: "Color 1",
     },
     {
       key: "color2" as keyof Theme,
-      description: "(light green)",
+      description: "(base green)",
       label: "Color 2",
     },
     {
       key: "color3" as keyof Theme,
-      description: "(light yellow)",
+      description: "(base yellow)",
       label: "Color 3",
     },
     {
       key: "color4" as keyof Theme,
-      description: "(light blue)",
+      description: "(base blue)",
       label: "Color 4",
     },
     {
       key: "color5" as keyof Theme,
-      description: "(light magenta)",
+      description: "(base magenta)",
       label: "Color 5",
     },
     {
       key: "color6" as keyof Theme,
-      description: "(light cyan)",
+      description: "(base cyan)",
       label: "Color 6",
     },
     {
@@ -90,32 +90,32 @@
     },
     {
       key: "color9" as keyof Theme,
-      description: "(dark red)",
+      description: "(light red)",
       label: "Color 9",
     },
     {
       key: "color10" as keyof Theme,
-      description: "(dark green)",
+      description: "(light green)",
       label: "Color 10",
     },
     {
       key: "color11" as keyof Theme,
-      description: "(dark yellow)",
+      description: "(light yellow)",
       label: "Color 11",
     },
     {
       key: "color12" as keyof Theme,
-      description: "(dark blue)",
+      description: "(light blue)",
       label: "Color 12",
     },
     {
       key: "color13" as keyof Theme,
-      description: "(dark magenta)",
+      description: "(light magenta)",
       label: "Color 13",
     },
     {
       key: "color14" as keyof Theme,
-      description: "(dark cyan)",
+      description: "(light cyan)",
       label: "Color 14",
     },
     {
@@ -127,12 +127,12 @@
     // special
     {
       key: "color16" as keyof Theme,
-      description: "(light orange)",
+      description: "(base orange)",
       label: "Color 16",
     },
     {
       key: "color17" as keyof Theme,
-      description: "(dark orange)",
+      description: "(light orange)",
       label: "Color 17",
     },
     {

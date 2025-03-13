@@ -42,7 +42,7 @@
         containerElement.style.setProperty(`--${token}`, colors[colorKey]);
       });
 
-      // Keep the existing code for setting other CSS variables
+      // set css variables based on ANSI colors
       Object.entries(colors).forEach(([key, value]) => {
         containerElement.style.setProperty(`--${key}`, value);
       });
@@ -138,7 +138,7 @@
 <!--
   CSS
 -->
-<style>
+<style lang="scss">
   .code-preview-container {
     display: flex;
     flex-direction: column;
@@ -196,44 +196,46 @@
   }
 
   :global(.keyword) {
-    color: var(--color5);
-    font-weight: normal;
+    color: var(--keyword);
   }
 
   :global(.string) {
-    color: var(--color2);
+    color: var(--string);
   }
 
   :global(.number) {
-    color: var(--color11);
+    color: var(--number);
   }
 
   :global(.variable) {
-    color: var(--color1);
+    color: var(--variable);
   }
 
   :global(.function) {
-    color: var(--color4);
+    color: var(--function);
   }
 
   :global(.builtin) {
-    color: var(--color6);
+    color: var(--builtin);
     font-weight: normal;
   }
 
   :global(.property) {
-    color: var(--color1);
+    color: var(--property);
   }
 
   :global(.parameter) {
-    color: var(--color11);
-    font-style: normal;
+    color: var(--parameter);
   }
 
-  :global(.type),
+  :global(.type) {
+    color: var(--type);
+  }
+
   :global(.class) {
-    color: var(--color3);
-    font-weight: normal;
+    color: var(--class);
+    //font-style: italic;
+    //font-weight: bold;
   }
 
   :global(.special) {

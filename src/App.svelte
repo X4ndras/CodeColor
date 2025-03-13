@@ -8,7 +8,7 @@
   import ExportPopup from "./lib/ExportPopup.svelte";
   import ColorPreview from "./lib/ColorPreview.svelte";
   import { onMount } from "svelte";
-  import { colorStore, darkMode } from "./stores.svelte";
+  import { colorStore, darkMode, syntaxMapping } from "./stores.svelte";
   import { colorKeys } from "./Types.svelte";
 
   let showSidebar = $state(false);
@@ -40,7 +40,10 @@
     }
 
     // 3. Set primary SMUI theme variables
-    root.style.setProperty("--mdc-theme-primary", $colorStore.color1);
+    root.style.setProperty(
+      "--mdc-theme-primary",
+      $colorStore[$syntaxMapping.keyword],
+    );
     root.style.setProperty("--mdc-theme-secondary", $colorStore.color2);
     root.style.setProperty("--mdc-theme-error", $colorStore.color9);
   }
@@ -174,7 +177,7 @@
 
   .toggle-sidebar {
     position: fixed;
-    top: .8rem;
+    top: 0.8rem;
     left: 1rem;
     z-index: 101;
     border: 1px solid var(--border-color);
@@ -208,7 +211,6 @@
       padding-right: 1rem;
       margin-bottom: 0.8rem;
     }
-
 
     .toggle-sidebar {
       display: flex;

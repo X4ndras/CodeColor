@@ -4,12 +4,24 @@
   import { colorStore } from "../stores.svelte";
 
   export let column: ColorKey[];
+  
+  function handleColorChange(key: string, newColor: string) {
+    // Update the color in the store
+    colorStore.update(store => ({
+      ...store,
+      [key]: newColor
+    }));
+  }
 </script>
 
 <div>
   {#each column as { key, label, description }}
     {#if $colorStore && $colorStore[key]}
-      <ColorCell color={$colorStore[key]} label={`${label} ${description}`} />
+      <ColorCell 
+        color={$colorStore[key]} 
+        label={`${label} ${description}`} 
+        onColorChange={(newColor) => handleColorChange(key, newColor)}
+      />
     {:else}
       <div class="error-cell">Error: {key} not found</div>
     {/if}
