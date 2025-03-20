@@ -191,7 +191,7 @@
     Core syntax highlighting classes
   */
   :global(.comment) {
-    color: var(--color8);
+    color: var(--comment);
     font-style: italic;
   }
 
@@ -247,7 +247,7 @@
   }
 
   :global(.operator) {
-    color: var(--color15);
+    color: var(--operator);
   }
 
   :global(.enum),
@@ -322,7 +322,7 @@
   }
 
   :global(.py-property) {
-    color: var(--color15);
+    color: var(--property);
   }
 
   :global(.constructor) {
@@ -338,7 +338,7 @@
   }
 
   :global(.c-buildin) {
-    color: var (--color6);
+    color: var (--builtin);
   }
 
   :global(.error) {

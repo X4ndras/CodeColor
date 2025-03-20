@@ -1,9 +1,8 @@
 <script lang="ts">
   import hljs from "highlight.js/lib/core";
   import json from "highlight.js/lib/languages/json";
-  import css from "highlight.js/lib/languages/css";
-  import { colorStore, darkMode } from "../stores.svelte";
-  import { colorKeys } from "../Types.svelte";
+  import { colorStore, darkMode, syntaxMapping } from "../stores.svelte";
+  import { colorKeys, type ColorConfig } from "../Types.svelte";
   import Button, { Group, Icon, Label } from "@smui/button";
   import {
     mdiContentCopy,
@@ -18,34 +17,35 @@
     Label as SnackbarLabel,
   } from "@smui/snackbar";
 
-  let exportFormat = $state("json");
   let exportContent = $state("");
-  let rawExportContent = $state(""); // Add this to store raw content
+  let rawExportContent = $state(""); // Store raw content
   let importError = "";
   let snackbar = $state({ message: "", type: "success" });
   let openDialog = $state(false);
   let previewWindow: HTMLElement;
   let snackbarWithOpen: Snackbar;
 
-  function changeExportContent(format: string) {
-    exportFormat = format;
-    exportFormat === "json" ? generateJSON() : generateCSS();
-  }
-
   function generateJSON() {
-    const jsonString = JSON.stringify($colorStore, null, 2);
+    const config: ColorConfig = {
+      colors: $colorStore,
+      mappings: {
+          comment: $syntaxMapping.comment,
+          keyword: $syntaxMapping.keyword,
+          string: $syntaxMapping.string,
+          number: $syntaxMapping.number,
+          variable: $syntaxMapping.variable,
+          fn: $syntaxMapping.function,
+          type: $syntaxMapping.type,
+          class: $syntaxMapping.class,
+          parameter: $syntaxMapping.parameter,
+          operator: $syntaxMapping.operator,
+          builtin: $syntaxMapping.builtin,
+          property: $syntaxMapping.property,
+      }
+    };
+    const jsonString = JSON.stringify(config, null, 2);
     rawExportContent = jsonString; // Store the raw content
     exportContent = hljs.highlight(jsonString, { language: "json" }).value;
-  }
-
-  function generateCSS() {
-    const cssProperties = Object.entries($colorStore)
-      .map(([key, value]) => `  --${key}: ${value};`)
-      .join("\n");
-
-    const cssString = `:root {\n${cssProperties}\n}`;
-    rawExportContent = cssString; // Store the raw content
-    exportContent = hljs.highlight(cssString, { language: "css" }).value;
   }
 
   function downloadFile() {
@@ -54,7 +54,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `colors.${exportFormat}`;
+    a.download = `colors.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -81,21 +81,6 @@
     snackbarWithOpen.forceOpen();
   }
 
-  function parseCSS(cssContent: any) {
-    const themeData: Record<string, string> = {};
-    const regex = /--(\w+):\s*([^;]+);/g;
-    let match;
-
-    while ((match = regex.exec(cssContent)) !== null) {
-      // Remove the "--" prefix that was added during export
-      const themeProperty: string = match[1] as string;
-      const themeValue = match[2].trim();
-      themeData[themeProperty] = themeValue;
-    }
-
-    return themeData;
-  }
-
   function handleFileImport(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -106,23 +91,19 @@
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        let importedTheme;
-
-        // Detect if the file is JSON or CSS
-        if (file.name.endsWith(".json")) {
-          importedTheme = JSON.parse(content);
-        } else if (file.name.endsWith(".css")) {
-          importedTheme = parseCSS(content);
-        } else {
-          throw new Error("Unsupported file format");
+        const parsedData = JSON.parse(content);
+        
+        // Check if the imported file has the expected ColorConfig structure
+        if (!parsedData.colors || !parsedData.mappings) {
+          throw new Error("Invalid theme format: missing colors or mappings");
         }
-
+        
         // Get all required keys from colorKeys array
         const requiredKeys = colorKeys.map((colorKey) => colorKey.key);
 
-        // Check for missing keys
+        // Check for missing keys in the colors object
         const missingKeys = requiredKeys.filter(
-          (key) => !(key in importedTheme),
+          (key) => !(key in parsedData.colors),
         );
 
         if (missingKeys.length > 0) {
@@ -131,8 +112,27 @@
           return;
         }
 
-        // Create a new object to trigger reactivity
-        $colorStore = { ...importedTheme };
+        // Update the color store with imported colors
+        $colorStore = { ...parsedData.colors };
+        
+        // Update the syntax mappings if available
+        if (parsedData.mappings) {
+          // Temporary mapping to convert from ColorConfig.mappings to expected format
+          const mappingKeys: Record<string, keyof typeof $syntaxMapping> = {
+            fn: 'function',
+            // Add other keys if they differ
+          };
+          
+          Object.entries(parsedData.mappings).forEach(([key, value]) => {
+            // Check if this key needs to be mapped
+            const syntaxKey = mappingKeys[key] || key as keyof typeof $syntaxMapping;
+            
+            // Only update if the key exists in our syntax mapping
+            if (syntaxKey in $syntaxMapping) {
+              $syntaxMapping[syntaxKey] = value as keyof typeof $colorStore;
+            }
+          });
+        }
 
         importError = "";
         showSnackbar("Theme imported successfully", "success");
@@ -164,7 +164,6 @@
 
   onMount(() => {
     hljs.registerLanguage("json", json);
-    hljs.registerLanguage("css", css);
     // Set initial content after languages are registered
     generateJSON();
   });
@@ -173,24 +172,6 @@
 <Dialog bind:open={openDialog} surface$style="max-height: 80vh">
   <Title>Export Theme</Title>
   <Content>
-    <Group variant="outlined">
-      <Button
-        class="format-button"
-        variant="outlined"
-        color={exportFormat === "json" ? "primary" : "secondary"}
-        onclick={() => changeExportContent("json")}
-      >
-        <Label>JSON</Label>
-      </Button>
-      <Button
-        class="format-button"
-        variant="outlined"
-        color={exportFormat === "css" ? "primary" : "secondary"}
-        onclick={() => changeExportContent("css")}
-      >
-        <Label>CSS</Label>
-      </Button>
-    </Group>
     <div class="preview-window" bind:this={previewWindow}>
       <pre><code>{@html exportContent}</code></pre>
     </div>
@@ -225,7 +206,7 @@
     <input
       id="import-file"
       type="file"
-      accept=".json,.css"
+      accept=".json"
       style="display: none;"
       onchange={handleFileImport}
     />

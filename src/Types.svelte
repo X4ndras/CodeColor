@@ -180,4 +180,24 @@
     | "operator"
     | "builtin"
     | "property";
+
+  export interface ColorConfig {
+    colors: Theme;
+    mappings: SyntaxMapping;
+  }
+
+  export interface SyntaxMapping {
+    comment: string;
+    keyword: string;
+    string: string;
+    number: string;
+    variable: string;
+    fn: string;
+    type: string;
+    class: string;
+    parameter: string;
+    operator: string;
+    builtin: string;
+    property: string;
+  }
 </script>
