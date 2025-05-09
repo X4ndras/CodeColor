@@ -35,4 +35,4 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
         with:
-          publish_dir: build  # Replace "build" if your app outputs to a different directory
+          publish_dir: dist  # Replace "build" if your app outputs to a different directory
