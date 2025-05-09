@@ -6,27 +6,30 @@ on:
       - main  # Trigger workflow on push to the `main` branch
 
 jobs:
-  build:
-    name: Build and Deploy
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: npm install
 
+      # Step 4: Build the Svelte App
       - name: Build Svelte App
         run: npm run build
 
-      - name: Setup GitHub Pages
-        uses: uses: actions/deploy-pages@v2
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build  # Adjust this according to your Svelte app's build output directory
+          publish_dir: build  # Replace "build" if your app outputs to a different directory
