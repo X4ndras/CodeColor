@@ -8,11 +8,17 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Update the permissions
     permissions:
-      id-token: write
       contents: read
-      pages: write
-
+      pages: write     # Needed for GitHub Pages deployment
+      id-token: write  # Needed for GitHub Pages deployment
+      
+    # Configure GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -21,19 +27,22 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          
       - name: Install Dependencies
         run: npm install
         
       - name: Build Svelte App
         run: npm run build
-
-      - name: Upload Artifact
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      
+      # Use upload-pages-artifact instead of upload-artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: dist
+          path: ./dist  # Path to your build output directory
           
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v3
-        with:
-          artifact_name: github-pages
