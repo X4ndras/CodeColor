@@ -3,7 +3,7 @@ name: Build and Deploy Svelte App to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger workflow on push to the `main` branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -13,26 +13,26 @@ jobs:
       contents: read
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      # Step 3: Install Dependencies
       - name: Install Dependencies
         run: npm install
-
-      # Step 4: Build the Svelte App
       - name: Build Svelte App
         run: npm run build
 
+      # Upload build artifacts
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-pages
+          path: dist
       # Step 5: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v2
         with:
-          publish_dir: dist  # Replace "build" if your app outputs to a different directory
+          artifact_name: github-pages
+          publish_dir: dist
