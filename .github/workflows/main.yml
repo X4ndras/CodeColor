@@ -36,8 +36,17 @@ jobs:
         
       - name: Build Svelte App
         env:
-          BASE_URL: '/Code-Color/' # Set the base URL to match your repository name
+          BASE_URL: '/Code-Color/'
         run: npm run build
+        
+      - name: Debug Build Output
+        run: |
+          echo "Listing dist directory:"
+          ls -la dist
+          echo "Listing dist/assets directory:"
+          ls -la dist/assets || echo "No assets directory"
+          echo "Content of dist/index.html:"
+          cat dist/index.html || echo "No index.html file"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
