@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-const base = process.env.BASE_URL || '/Code-Color/'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte()],
-  base: base,
+  base: '/Code-Color/',
   build: {
     outDir: 'dist',
     emptyOutDir: true
