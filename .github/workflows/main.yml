@@ -32,12 +32,12 @@ jobs:
           cache: 'npm'
           
       - name: Install Dependencies
-        run: npm install
+        run: yarn
         
       - name: Build Svelte App
         env:
           BASE_URL: '/Code-Color/'
-        run: npm run build
+        run: yarn build
         
       - name: Debug Build Output
         run: |
