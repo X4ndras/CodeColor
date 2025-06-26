@@ -5,13 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node fix-build.js",
+    "build": "npm run prepare && vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json",
     "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
     "smui-theme-light": "smui-theme compile public/smui-light.css -i src/theme",
     "smui-theme-dark": "smui-theme compile public/smui-dark.css -i src/theme/dark",
-    "postinstall": "mkdir -p public/tree-sitter && cp node_modules/web-tree-sitter/tree-sitter.wasm public/tree-sitter/ && node scripts/copy-wasm.js"
+    "postinstall": "mkdir -p public/tree-sitter && cp node_modules/web-tree-sitter/tree-sitter.wasm public/tree-sitter/ && node scripts/copy-wasm.js",
+    "clean:build": "rm -rf ./dist",
+    "clean": "npm run clean:build && rm -rf ./node_modules"
   },
   "dependencies": {
     "@smui/button": "^8.0.0-beta.3",

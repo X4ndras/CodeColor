@@ -1,18 +1,26 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [svelte()],
-  base: '/Code-Color/',
+  base: "/CodeColor",
   build: {
-    outDir: 'dist',
-    emptyOutDir: true
+    outDir: "dist",
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+      },
+    },
   },
   optimizeDeps: {
     exclude: ["web-tree-sitter"],
   },
-  assetsInclude: ["**/*.wasm", "**/*.html"],
+
   server: {
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin",
