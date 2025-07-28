@@ -2,7 +2,7 @@
 
 Customizable colors for different syntax elements
 Flexible syntax mapping system
-Export and import themes as JSON
+Export and import themes as JSON it's best to use with my [nvim dotfiles](https://github.com/X4ndras/.nvim) (I still need to extract the theming plugin to a repo sry for that the folder can be plugin can be found in the same repo under [.nvim/plugs/firelfy-theme](https://github.com/X4ndras/.nvim/tree/main/plugs/firefly-theme))
 
 ## Installation
 
