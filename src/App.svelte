@@ -1,6 +1,8 @@
 <script lang="ts">
   import Card from "@smui/card";
   import Switch from "@smui/switch";
+  import Dialog, { Content, Title, Actions } from "@smui/dialog";
+  import Button from "@smui/button";
   import Tab, { Icon, Label } from "@smui/tab";
   import TabBar from "@smui/tab-bar";
   import Sidebar from "./lib/Sidebar.svelte";
@@ -8,11 +10,12 @@
   import ExportPopup from "./lib/ExportPopup.svelte";
   import ColorPreview from "./lib/ColorPreview.svelte";
   import { onMount } from "svelte";
-  import { colorStore, darkMode, syntaxMapping } from "./stores.svelte";
+  import { colorStore, darkMode, syntaxMapping, resetAll } from "./stores.svelte";
   import { colorKeys } from "./Types.svelte";
 
   let showSidebar = $state(false);
   let active = $state("code");
+  let confirmResetOpen = $state(false);
 
   function applyTheme() {
     const root = document.documentElement;
@@ -93,7 +96,7 @@
         </button>
         <Switch
           checked={$darkMode}
-          onSMUISwitchChange={() => {
+          on:SMUISwitchChange={() => {
             $darkMode = !$darkMode;
           }}
         />
@@ -104,7 +107,7 @@
   </div>
 
   <div class="layout">
-    <Sidebar bind:showSidebar />
+    <Sidebar bind:showSidebar onRequestReset={() => (confirmResetOpen = true)} />
     <div class="preview-section">
       <div class="tabs-wrapper">
         <Card>
@@ -128,6 +131,17 @@
     </div>
   </div>
 </main>
+
+<Dialog bind:open={confirmResetOpen}>
+  <Title>Reset theme?</Title>
+  <Content>
+    This will reset all colors, syntax mappings, and dark mode to defaults.
+  </Content>
+  <Actions>
+    <Button onclick={() => (confirmResetOpen = false)}>Cancel</Button>
+    <Button variant="raised" color="secondary" onclick={() => { resetAll(); confirmResetOpen = false; }}>Confirm Reset</Button>
+  </Actions>
+</Dialog>
 
 <style>
   .header {

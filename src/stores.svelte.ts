@@ -1,6 +1,8 @@
 import { writable } from "svelte/store";
 import type { Theme, SyntaxToken } from "./Types.svelte";
 
+const LOCAL_KEY = 'codecolor-state-v1';
+
 export const darkMode = writable<boolean>(false);
 
 export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
@@ -10,7 +12,7 @@ export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
   number: "color11", // Bright Yellow
   variable: "color1", // Red
   function: "color4", // Blue
-  type: "color3", // Yellow
+  type: "color9", // Yellow
   class: "color3", // Yellow
   parameter: "color11", // Bright Yellow
   operator: "color15", // White (fg)
@@ -54,6 +56,143 @@ export const colorStore = writable<Theme>({
   fg1: "#9da5b4", // Default foreground
   fg2: "#978787", // Muted foreground
 });
+
+// persistence
+type PersistedState = {
+  darkMode: boolean;
+  syntaxMapping: Record<SyntaxToken, keyof Theme>;
+  colors: Theme;
+};
+
+function loadPersisted(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PersistedState;
+  } catch {
+    return null;
+  }
+}
+
+function persist(state: PersistedState) {
+  try {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+  } catch {}
+}
+
+// Apply persisted on init
+const initial = typeof window !== 'undefined' ? loadPersisted() : null;
+if (initial) {
+  darkMode.set(initial.darkMode);
+  syntaxMapping.set(initial.syntaxMapping);
+  colorStore.set(initial.colors);
+}
+
+// Subscribe and persist changes
+let currentState: PersistedState = {
+  darkMode: false,
+  syntaxMapping: {
+    comment: "color8",
+    keyword: "color5",
+    string: "color2",
+    number: "color11",
+    variable: "color1",
+    function: "color4",
+    type: "color9",
+    class: "color3",
+    parameter: "color11",
+    operator: "color15",
+    builtin: "color6",
+    property: "color1",
+  },
+  colors: {
+    color0: "#1c1a1c",
+    color1: "#A64B3A",
+    color2: "#91b794",
+    color3: "#D48B1D",
+    color4: "#625C70",
+    color5: "#CC666B",
+    color6: "#79999d",
+    color7: "#b9bfca",
+    color8: "#5c6370",
+    color9: "#BD5644",
+    color10: "#B5E5B9",
+    color11: "#F1D6AB",
+    color12: "#888198",
+    color13: "#E0A3A6",
+    color14: "#A1CCD1",
+    color15: "#E3DEDE",
+    color16: "#d19a66",
+    color17: "#e5c07b",
+    bg0: "#21252b",
+    bg1: "#2c313a",
+    bg2: "#353b45",
+    fg0: "#dcdfe4",
+    fg1: "#9da5b4",
+    fg2: "#978787",
+  },
+};
+
+if (initial) currentState = initial;
+
+darkMode.subscribe((v) => {
+  currentState.darkMode = v;
+  persist(currentState);
+});
+syntaxMapping.subscribe((v) => {
+  currentState.syntaxMapping = v as any;
+  persist(currentState);
+});
+colorStore.subscribe((v) => {
+  currentState.colors = v;
+  persist(currentState);
+});
+
+export function resetAll() {
+  localStorage.removeItem(LOCAL_KEY);
+  // Reset to defaults by reassigning initial literal values
+  darkMode.set(false);
+  syntaxMapping.set({
+    comment: "color8",
+    keyword: "color5",
+    string: "color2",
+    number: "color11",
+    variable: "color1",
+    function: "color4",
+    type: "color9",
+    class: "color3",
+    parameter: "color11",
+    operator: "color15",
+    builtin: "color6",
+    property: "color1",
+  });
+  colorStore.set({
+    color0: "#1c1a1c",
+    color1: "#A64B3A",
+    color2: "#91b794",
+    color3: "#D48B1D",
+    color4: "#625C70",
+    color5: "#CC666B",
+    color6: "#79999d",
+    color7: "#b9bfca",
+    color8: "#5c6370",
+    color9: "#BD5644",
+    color10: "#B5E5B9",
+    color11: "#F1D6AB",
+    color12: "#888198",
+    color13: "#E0A3A6",
+    color14: "#A1CCD1",
+    color15: "#E3DEDE",
+    color16: "#d19a66",
+    color17: "#e5c07b",
+    bg0: "#21252b",
+    bg1: "#2c313a",
+    bg2: "#353b45",
+    fg0: "#dcdfe4",
+    fg1: "#9da5b4",
+    fg2: "#978787",
+  });
+}
 /*
 // one dark pro
 export const colorStore = writable<Theme>({
