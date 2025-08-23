@@ -1,8 +1,9 @@
 <script lang="ts">
   import Card from "@smui/card";
-  import Switch from "@smui/switch";
   import Dialog, { Content, Title, Actions } from "@smui/dialog";
   import Button from "@smui/button";
+  import IconButton, { Icon as IconButtonIcon } from "@smui/icon-button";
+  import { mdiWeatherNight, mdiWhiteBalanceSunny } from "@mdi/js";
   import Tab, { Icon, Label } from "@smui/tab";
   import TabBar from "@smui/tab-bar";
   import Sidebar from "./lib/Sidebar.svelte";
@@ -10,7 +11,7 @@
   import ExportPopup from "./lib/ExportPopup.svelte";
   import ColorPreview from "./lib/ColorPreview.svelte";
   import { onMount } from "svelte";
-  import { colorStore, darkMode, syntaxMapping, resetAll } from "./stores.svelte";
+  import { darkTheme, lightTheme, darkMode, syntaxMapping, resetAll, resetCurrentTheme } from "./stores.svelte";
   import { colorKeys } from "./Types.svelte";
 
   let showSidebar = $state(false);
@@ -20,35 +21,43 @@
   function applyTheme() {
     const root = document.documentElement;
 
-    // 1. Set all basic color variables from the store
-    for (const { key, description, label } of colorKeys) {
-      root.style.setProperty(`--${key}`, $colorStore[key]);
+    // Set all basic color variables from the store
+    const activeColors = $darkMode ? $darkTheme : $lightTheme;
+    for (const { key } of colorKeys) {
+      root.style.setProperty(`--${key}`, activeColors[key]);
     }
 
-    // 2. Set mode-specific CSS variables
-    if ($darkMode) {
-      root.style.setProperty("--mdc-theme-surface", $colorStore.bg1);
-      root.style.setProperty("--mdc-theme-on-primary", $colorStore.fg0);
-      root.style.setProperty("--mdc-theme-on-secondary", $colorStore.fg0);
-      root.style.setProperty("--mdc-theme-on-surface", $colorStore.color15);
-      // Always set the app background
-      root.style.setProperty("--app-background", $colorStore.color0);
-    } else {
-      root.style.setProperty("--mdc-theme-surface", $colorStore.fg1);
-      root.style.setProperty("--mdc-theme-on-primary", $colorStore.bg0);
-      root.style.setProperty("--mdc-theme-on-secondary", $colorStore.bg0);
-      root.style.setProperty("--mdc-theme-on-surface", $colorStore.color0);
-      // Always set the app background
-      root.style.setProperty("--app-background", $colorStore.color15);
-    }
 
-    // 3. Set primary SMUI theme variables
-    root.style.setProperty(
-      "--mdc-theme-primary",
-      $colorStore[$syntaxMapping.keyword],
-    );
-    root.style.setProperty("--mdc-theme-secondary", $colorStore.color2);
-    root.style.setProperty("--mdc-theme-error", $colorStore.color9);
+    // Set primary SMUI theme variables
+    const colors = $darkMode ? $darkTheme : $lightTheme;
+    root.style.setProperty("--mdc-theme-surface", colors.bg1);
+    root.style.setProperty("--mdc-theme-on-primary", colors.fg0);
+    root.style.setProperty("--mdc-theme-on-secondary", colors.fg0);
+    root.style.setProperty("--mdc-theme-on-surface", colors.color15);
+    root.style.setProperty("--app-background", colors.color0);
+
+    root.style.setProperty("--mdc-theme-primary", colors[$syntaxMapping.keyword]);
+    root.style.setProperty("--mdc-theme-secondary", colors.color2);
+    root.style.setProperty("--mdc-theme-error", colors.color9);
+
+    // Map text colors to color15 per SMUI theming variables
+    // https://sveltematerialui.com/THEMING.md
+    root.style.setProperty("--mdc-theme-text-primary-on-background", colors.color15);
+    root.style.setProperty("--mdc-theme-text-secondary-on-background", colors.color15);
+    root.style.setProperty("--mdc-theme-text-disabled-on-background", colors.color15);
+    root.style.setProperty("--mdc-theme-text-icon-on-background", colors.color15);
+    root.style.setProperty("--mdc-theme-text-primary-on-light", colors.color15);
+    root.style.setProperty("--mdc-theme-text-secondary-on-light", colors.color15);
+    root.style.setProperty("--mdc-theme-text-hint-on-light", colors.color15);
+    root.style.setProperty("--mdc-theme-text-disabled-on-light", colors.color15);
+    root.style.setProperty("--mdc-theme-text-icon-on-light", colors.color15);
+    root.style.setProperty("--mdc-theme-text-primary-on-dark", colors.color15);
+    root.style.setProperty("--mdc-theme-text-secondary-on-dark", colors.color15);
+    root.style.setProperty("--mdc-theme-text-hint-on-dark", colors.color15);
+    root.style.setProperty("--mdc-theme-text-disabled-on-dark", colors.color15);
+    root.style.setProperty("--mdc-theme-text-icon-on-dark", colors.color15);
+
+    root.style.setProperty("--text-color", colors.color15);
   }
 
   $effect(() => {
@@ -94,15 +103,19 @@
         >
           {showSidebar ? "✕" : "☰"}
         </button>
-        <Switch
-          checked={$darkMode}
-          on:SMUISwitchChange={() => {
-            $darkMode = !$darkMode;
-          }}
-        />
-        <span>🌙</span>
       </div>
       <ExportPopup />
+      <IconButton
+        aria-label="Toggle theme"
+        onclick={() => {
+          $darkMode = !$darkMode;
+          applyTheme();
+        }}
+      >
+        <IconButtonIcon tag="svg" viewBox="0 0 24 24">
+          <path fill="currentColor" d={$darkMode ? mdiWeatherNight : mdiWhiteBalanceSunny} />
+        </IconButtonIcon>
+      </IconButton>
     </div>
   </div>
 
@@ -139,7 +152,7 @@
   </Content>
   <Actions>
     <Button onclick={() => (confirmResetOpen = false)}>Cancel</Button>
-    <Button variant="raised" color="secondary" onclick={() => { resetAll(); confirmResetOpen = false; }}>Confirm Reset</Button>
+    <Button variant="raised" color="secondary" onclick={() => { resetCurrentTheme($darkMode); confirmResetOpen = false; }}>Confirm Reset</Button>
   </Actions>
 </Dialog>
 
@@ -154,6 +167,13 @@
     padding-left: calc(var(--sidebar-width) + 2rem);
     padding-right: 0.8rem;
     position: relative;
+  }
+  
+  :global(html) {
+    color: var(--color15);
+  }
+  :global(body) {
+    color: var(--color15);
   }
 
   .tabs-wrapper {

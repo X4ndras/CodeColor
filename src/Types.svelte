@@ -137,49 +137,37 @@
     },
     {
       key: "bg0" as keyof Theme,
-      description: "(bg darker)",
+      description: "(bg0 darker)",
       label: "Color 18",
     },
     {
       key: "bg1" as keyof Theme,
-      description: "(bg brighter)",
+      description: "(bg1 brighter)",
       label: "Color 19",
     },
     {
       key: "bg2" as keyof Theme,
-      description: "(bg brighter+)",
+      description: "(bg2 brighter+)",
       label: "Color 20",
     },
     {
       key: "fg0" as keyof Theme,
-      description: "(fg brighter)",
+      description: "(fg0 brighter)",
       label: "Color 20",
     },
     {
       key: "fg1" as keyof Theme,
-      description: "(fg darker)",
+      description: "(fg1 darker)",
       label: "Color 20",
     },
     {
       key: "fg2" as keyof Theme,
-      description: "(fg darker+)",
+      description: "(fg2 darker+)",
       label: "Color 20",
     },
   ];
 
-  export type SyntaxToken =
-    | "comment"
-    | "keyword"
-    | "string"
-    | "number"
-    | "variable"
-    | "function"
-    | "type"
-    | "class"
-    | "parameter"
-    | "operator"
-    | "builtin"
-    | "property";
+  export type SyntaxToken = keyof SyntaxMapping
 
   export interface ColorConfig {
     colors: Theme;
@@ -192,12 +180,15 @@
     string: string;
     number: string;
     variable: string;
-    fn: string;
+    function: string;
     type: string;
     class: string;
+    namespace: string;
     parameter: string;
     operator: string;
     builtin: string;
     property: string;
+    special: string;
+    macro: string;
   }
 </script>

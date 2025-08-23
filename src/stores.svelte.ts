@@ -1,11 +1,11 @@
 import { writable } from "svelte/store";
 import type { Theme, SyntaxToken } from "./Types.svelte";
 
-const LOCAL_KEY = 'codecolor-state-v1';
+const LOCAL_KEY = 'codecolor-state-v2';
 
 export const darkMode = writable<boolean>(false);
 
-export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
+const defaultSyntax: Record<SyntaxToken, keyof Theme> = {
   comment: "color8", // Dark gray
   keyword: "color5", // Magenta
   string: "color2", // Green
@@ -14,54 +14,98 @@ export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
   function: "color4", // Blue
   type: "color9", // Yellow
   class: "color3", // Yellow
+  namespace: "color3", // Bright Yellow
   parameter: "color11", // Bright Yellow
   operator: "color15", // White (fg)
   builtin: "color6", // Cyan
   property: "color1", // Red
+  special: "color12", // Violet/Blue accent
+  macro: "color9", // Violet/Blue accent
+};
+
+export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
+  ...defaultSyntax,
 });
 
 // firefly
-export const colorStore = writable<Theme>({
-  // Base colors (0-7)
-  color0: "#1c1a1c", // Background
-  color1: "#A64B3A", // Red
-  color2: "#91b794", // Green
-  color3: "#D48B1D", // Yellow
-  color4: "#625C70", // Blue
-  color5: "#CC666B", // Magenta/Purple
-  color6: "#79999d", // Cyan
-  color7: "#b9bfca", // Light Gray
+// Defaults: Dark (Firefly)
+const defaultDark: Theme = {
+  color0: "#1c1a1c",
+  color1: "#A64B3A",
+  color2: "#91b794",
+  color3: "#D48B1D",
+  color4: "#625C70",
+  color5: "#CC666B",
+  color6: "#79999d",
+  color7: "#b9bfca",
+  color8: "#5c6370",
+  color9: "#BD5644",
+  color10: "#B5E5B9",
+  color11: "#F1D6AB",
+  color12: "#888198",
+  color13: "#E0A3A6",
+  color14: "#A1CCD1",
+  color15: "#E3DEDE",
+  color16: "#d19a66",
+  color17: "#e5c07b",
+  bg0: "#21252b",
+  bg1: "#2c313a",
+  bg2: "#353b45",
+  fg0: "#dcdfe4",
+  fg1: "#9da5b4",
+  fg2: "#978787",
+};
 
-  // Bright colors (8-15)
-  color8: "#5c6370", // Dark Gray
-  color9: "#BD5644", // Bright Red
-  color10: "#B5E5B9", // Bright Green
-  color11: "#F1D6AB", // Bright Yellow/Orange
-  color12: "#888198", // Bright Blue
-  color13: "#E0A3A6", // Bright Magenta/Purple
-  color14: "#A1CCD1", // Bright Cyan
-  color15: "#E3DEDE", // White Text
+// Defaults: Light (Solarized Light)
+// Reference: base3 #fdf6e3 (background), base2 #eee8d5 (cards),
+// base1 #93a1a1, base0 #839496, base00 #657b83, base01 #586e75,
+// yellow #b58900, orange #cb4b16, red #dc322f, magenta #d33682,
+// violet #6c71c4, blue #268bd2, cyan #2aa198, green #859900
+const defaultLight: Theme = {
+  // Base colors
+  color0: "#fdf6e3", // Background (Solarized base3)
+  color1: "#dc322f", // Red
+  color2: "#859900", // Green
+  color3: "#b58900", // Yellow
+  color4: "#268bd2", // Blue
+  color5: "#d33682", // Magenta
+  color6: "#2aa198", // Cyan
+  color7: "#93a1a1", // Light Gray (base1)
 
-  // Special colors
-  color16: "#d19a66", // Orange
-  color17: "#e5c07b", // Bright Orange
+  // Bright colors
+  color8: "#586e75", // Dark Gray (base01)
+  color9: "#cb4b16", // Orange / Bright Red
+  color10: "#8ea600", // Bright Green (approximation)
+  color11: "#b58900", // Bright Yellow/Orange
+  color12: "#6c71c4", // Bright Blue/Violet
+  color13: "#d33682", // Bright Magenta
+  color14: "#2aa198", // Bright Cyan
+  color15: "#657b83", // Text (base00)
+
+  // Special
+  color16: "#cb4b16", // Orange
+  color17: "#b58900", // Bright Orange
 
   // Background variants
-  bg0: "#21252b", // Darker background
-  bg1: "#2c313a", // Lighter background
-  bg2: "#353b45", // Selection background
+  bg0: "#fdf6e3", // Code preview background (base3)
+  bg1: "#eee8d5", // Card background (base2)
+  bg2: "#e6dfc8", // Slightly darker overlay (approx)
 
   // Foreground variants
-  fg0: "#dcdfe4", // Brighter foreground
-  fg1: "#9da5b4", // Default foreground
-  fg2: "#978787", // Muted foreground
-});
+  fg0: "#657b83", // Primary text (base00)
+  fg1: "#586e75", // Secondary text (base01)
+  fg2: "#93a1a1", // Muted text (base1)
+};
+
+export const darkTheme = writable<Theme>({ ...defaultDark });
+export const lightTheme = writable<Theme>({ ...defaultLight });
 
 // persistence
 type PersistedState = {
   darkMode: boolean;
   syntaxMapping: Record<SyntaxToken, keyof Theme>;
-  colors: Theme;
+  darkColors: Theme;
+  lightColors: Theme;
 };
 
 function loadPersisted(): PersistedState | null {
@@ -84,53 +128,18 @@ function persist(state: PersistedState) {
 const initial = typeof window !== 'undefined' ? loadPersisted() : null;
 if (initial) {
   darkMode.set(initial.darkMode);
-  syntaxMapping.set(initial.syntaxMapping);
-  colorStore.set(initial.colors);
+  // Merge persisted mapping with defaults to add any new keys (e.g., 'special')
+  syntaxMapping.set({ ...defaultSyntax, ...initial.syntaxMapping });
+  darkTheme.set(initial.darkColors);
+  lightTheme.set(initial.lightColors);
 }
 
 // Subscribe and persist changes
 let currentState: PersistedState = {
   darkMode: false,
-  syntaxMapping: {
-    comment: "color8",
-    keyword: "color5",
-    string: "color2",
-    number: "color11",
-    variable: "color1",
-    function: "color4",
-    type: "color9",
-    class: "color3",
-    parameter: "color11",
-    operator: "color15",
-    builtin: "color6",
-    property: "color1",
-  },
-  colors: {
-    color0: "#1c1a1c",
-    color1: "#A64B3A",
-    color2: "#91b794",
-    color3: "#D48B1D",
-    color4: "#625C70",
-    color5: "#CC666B",
-    color6: "#79999d",
-    color7: "#b9bfca",
-    color8: "#5c6370",
-    color9: "#BD5644",
-    color10: "#B5E5B9",
-    color11: "#F1D6AB",
-    color12: "#888198",
-    color13: "#E0A3A6",
-    color14: "#A1CCD1",
-    color15: "#E3DEDE",
-    color16: "#d19a66",
-    color17: "#e5c07b",
-    bg0: "#21252b",
-    bg1: "#2c313a",
-    bg2: "#353b45",
-    fg0: "#dcdfe4",
-    fg1: "#9da5b4",
-    fg2: "#978787",
-  },
+  syntaxMapping: { ...defaultSyntax },
+  darkColors: { ...defaultDark },
+  lightColors: { ...defaultLight },
 };
 
 if (initial) currentState = initial;
@@ -143,55 +152,34 @@ syntaxMapping.subscribe((v) => {
   currentState.syntaxMapping = v as any;
   persist(currentState);
 });
-colorStore.subscribe((v) => {
-  currentState.colors = v;
+darkTheme.subscribe((v) => {
+  currentState.darkColors = v;
+  persist(currentState);
+});
+lightTheme.subscribe((v) => {
+  currentState.lightColors = v;
   persist(currentState);
 });
 
 export function resetAll() {
   localStorage.removeItem(LOCAL_KEY);
-  // Reset to defaults by reassigning initial literal values
+  // Reset to defaults
   darkMode.set(false);
-  syntaxMapping.set({
-    comment: "color8",
-    keyword: "color5",
-    string: "color2",
-    number: "color11",
-    variable: "color1",
-    function: "color4",
-    type: "color9",
-    class: "color3",
-    parameter: "color11",
-    operator: "color15",
-    builtin: "color6",
-    property: "color1",
-  });
-  colorStore.set({
-    color0: "#1c1a1c",
-    color1: "#A64B3A",
-    color2: "#91b794",
-    color3: "#D48B1D",
-    color4: "#625C70",
-    color5: "#CC666B",
-    color6: "#79999d",
-    color7: "#b9bfca",
-    color8: "#5c6370",
-    color9: "#BD5644",
-    color10: "#B5E5B9",
-    color11: "#F1D6AB",
-    color12: "#888198",
-    color13: "#E0A3A6",
-    color14: "#A1CCD1",
-    color15: "#E3DEDE",
-    color16: "#d19a66",
-    color17: "#e5c07b",
-    bg0: "#21252b",
-    bg1: "#2c313a",
-    bg2: "#353b45",
-    fg0: "#dcdfe4",
-    fg1: "#9da5b4",
-    fg2: "#978787",
-  });
+  syntaxMapping.set({ ...defaultSyntax });
+  darkTheme.set({ ...defaultDark });
+  lightTheme.set({ ...defaultLight });
+}
+
+export function resetCurrentTheme(isDark: boolean) {
+  if (isDark) {
+    darkTheme.set({ ...defaultDark });
+  } else {
+    lightTheme.set({ ...defaultLight });
+  }
+}
+
+export function resetSyntaxDefaults() {
+  syntaxMapping.set({ ...defaultSyntax });
 }
 /*
 // one dark pro

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { colorStore, darkMode, syntaxMapping } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode, syntaxMapping } from "../stores.svelte";
   import type { Theme } from "../Types.svelte";
   import Button, { Group } from "@smui/button";
   import { getContext } from "svelte";
@@ -35,7 +35,7 @@
 
   // Update the CSS variables when colors or syntax mappings change
   $: {
-    colors = $colorStore;
+    colors = $darkMode ? $darkTheme : $lightTheme;
     if (containerElement) {
       // set syntax highlighting colors based on the syntax mapping
       Object.entries($syntaxMapping).forEach(([token, colorKey]) => {
@@ -44,20 +44,10 @@
 
       // set css variables based on ANSI colors
       Object.entries(colors).forEach(([key, value]) => {
-        containerElement.style.setProperty(`--${key}`, value);
+        containerElement.style.setProperty(`--${key}`, value as string);
       });
 
-      const tabs = containerElement.getElementsByClassName(
-        "tabs",
-      ) as HTMLCollectionOf<HTMLElement>;
-      // set code preview background color
-      if ($darkMode) {
-        containerElement.style.backgroundColor = colors.bg0;
-        tabs[0].style.backgroundColor = colors.bg1;
-      } else {
-        containerElement.style.backgroundColor = colors.fg0;
-        tabs[0].style.backgroundColor = colors.fg1;
-      }
+      // Background colors for the preview and tabs are set globally in app.scss
     }
   }
 
@@ -160,6 +150,7 @@
     font-size: 14px;
     line-height: 1.5;
   }
+  
   /* Global styles for code highlighting */
   :global(.line) {
     display: flex;
@@ -239,11 +230,11 @@
   }
 
   :global(.special) {
-    color: var(--color6);
+    color: var(--special);
   }
 
   :global(.namespace) {
-    color: var(--color3);
+    color: var(--namespace);
   }
 
   :global(.operator) {
@@ -257,7 +248,7 @@
   }
 
   :global(.macro) {
-    color: var(--color9);
+    color: var(--macro);
     font-weight: normal;
   }
 
@@ -310,7 +301,7 @@
   }
 
   :global(.css-macro) {
-    color: var(--color5);
+    color: var(--macro);
   }
 
   :global(.value) {

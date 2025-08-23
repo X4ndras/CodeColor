@@ -1,10 +1,8 @@
 <script lang="ts">
-  import type { SyntaxToken, Theme } from "../Types.svelte";
-  import { colorStore, syntaxMapping } from "../stores.svelte";
-  import Card from "@smui/card";
-  import Select, { Option } from "@smui/select";
+  import type { SyntaxToken } from "../Types.svelte";
+  import { darkTheme, lightTheme, darkMode, syntaxMapping, resetSyntaxDefaults } from "../stores.svelte";
   import SyntaxMapper from "./SyntaxMapper.svelte";
-
+  import Button from "@smui/button";
   // Create descriptions for each token to help users understand what they're mapping
   const tokenDescriptions: Record<SyntaxToken, string> = {
     comment: "Comments and documentation",
@@ -15,10 +13,13 @@
     function: "Function names and calls",
     type: "Types and interfaces",
     class: "Class names and definitions",
+    namespace: "Namespace names",
     parameter: "Function parameters",
     operator: "Operators like +, =, =>",
     builtin: "Built-in objects and functions",
     property: "Object properties",
+    special: "Special tokens",
+    macro: "Macro names",
   };
 
   const syntaxTokens: SyntaxToken[] = Object.keys(
@@ -29,10 +30,11 @@
   $: {
     // Apply syntax mapping to CSS variables
     if (typeof document !== "undefined") {
+      const active = $darkMode ? $darkTheme : $lightTheme;
       Object.entries($syntaxMapping).forEach(([token, colorKey]) => {
         document.documentElement.style.setProperty(
           `--${token}`,
-          $colorStore[colorKey],
+          active[colorKey],
         );
       });
     }
@@ -51,6 +53,9 @@
       </div>
     </div>
   {/each}
+  <Button variant="raised" onclick={() => { resetSyntaxDefaults(); }}>
+    Reset Syntax
+  </Button>
 </div>
 
 <style>
@@ -58,6 +63,7 @@
     padding: 0rem 1rem;
     display: flex;
     flex-direction: column;
+    padding-bottom: 1rem;
   }
 
   .mapping-row {

@@ -49,31 +49,45 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.smui-button--color-secondary {
-  background-color: var(--mdc-theme-surface) !important;
-  color: var(--mdc-theme-on-secondary) !important;
+/* Global styles for CodePreview to avoid per-component JS updates */
+.code-preview-container {
+  background-color: var(--bg0) !important;
 }
-// Add this at the bottom
-.mdc-button {
-  //background-color: var(--mdc-theme-surface) !important;
-  //color: var(--mdc-button-ink-color-primary, var(--mdc-theme-on-primary)) !important;
-  transition:
-    background-color 0.3s,
-    color 0.3s !important;
+.code-preview-container .tabs {
+  background-color: var(--bg1) !important;
+  color: 0.3s !important;
 }
 
-.mdc-button--unelevated.mdc-button--secondary {
-  //background-color: var(--mdc-button-fill-color-secondary, var(--mdc-theme-secondary)) !important;
-  //color: var(--mdc-button-ink-color-secondary, var(--mdc-theme-on-secondary)) !important;
+.smui-button--color-secondary {
+  background-color: var(--mdc-theme-surface) !important;
+  //color: var(--mdc-theme-on-secondary) !important;
+}
+// Add this at the bottom
+.mdc-button__icon,
+.mdc-deprecated-list-item,
+.mdc-select__selected-text,
+.mdc-button,
+.mdc-tab__text-label,
+.mdc-text-field__input,
+.mdc-floating-label {
+  color: var(--text-color) !important;
+  transition:
+  background-color 0.3s,
+  color 0.3s !important;
+}
+
+.mdc-select__dropdown-icon {
+  fill: var(--color15) !important;
+}
+
+.mdc-notched-outline__leading,
+.mdc-notched-outline__trailing {
+  border-color: var(--color15) !important;
 }
 
 .mdc-tab .mdc-tab__text-label {
   //color: var(--mdc-tab-text-label-color-default) !important;
   transition: color 0.3s !important;
-}
-
-.mdc-tab--active .mdc-tab__text-label {
-  //color: var(--mdc-tab-active-text-label-color) !important;
 }
 
 .mdc-tab-indicator .mdc-tab-indicator__content {
@@ -84,11 +98,6 @@ body {
 .mdc-dialog .mdc-dialog__content {
   //color: var(--mdc-dialog-content-ink-color) !important;
   transition: color 0.3s !important;
-}
-
-.mdc-dialog .mdc-dialog__container {
-  //background-color: var(--mdc-dialog-container-color) !important;
-  //transition: background-color 0.3s !important;
 }
 
 .mdc-select__anchor {

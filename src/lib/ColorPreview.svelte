@@ -1,7 +1,7 @@
 <script lang="ts">
   import { colorKeys, type ColorKey, type Theme } from "../Types.svelte";
   import ColorColumn from "./ColorColumn.svelte";
-  import { colorStore } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode } from "../stores.svelte";
 
   const terminalColors = colorKeys.slice(0, 16);
   const leftColumn = terminalColors.slice(0, 8); // Colors 0-7
@@ -37,13 +37,13 @@
       <div>
         <div
           class="separator"
-          style="background-color: {$colorStore.color7};"
+          style="background-color: {($darkMode ? $darkTheme : $lightTheme).color7};"
         ></div>
       </div>
       <div>
         <div
           class="separator"
-          style="background-color: {$colorStore.color15};"
+          style="background-color: {($darkMode ? $darkTheme : $lightTheme).color15};"
         ></div>
       </div>
       <ColorColumn column={leftAdditionalColumn} />

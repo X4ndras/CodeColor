@@ -1,24 +1,24 @@
 <script lang="ts">
   import type { ColorKey, Theme } from "../Types.svelte";
   import ColorCell from "./ColorCell.svelte";
-  import { colorStore } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode } from "../stores.svelte";
 
   export let column: ColorKey[];
   
   function handleColorChange(key: string, newColor: string) {
-    // Update the color in the store
-    colorStore.update(store => ({
-      ...store,
-      [key]: newColor
-    }));
+    if ($darkMode) {
+      darkTheme.update((store) => ({ ...store, [key]: newColor }));
+    } else {
+      lightTheme.update((store) => ({ ...store, [key]: newColor }));
+    }
   }
 </script>
 
 <div>
   {#each column as { key, label, description }}
-    {#if $colorStore && $colorStore[key]}
+    {#if ($darkMode ? $darkTheme : $lightTheme)[key]}
       <ColorCell 
-        color={$colorStore[key]} 
+        color={($darkMode ? $darkTheme : $lightTheme)[key]} 
         label={`${label} ${description}`} 
         onColorChange={(newColor) => handleColorChange(key, newColor)}
       />

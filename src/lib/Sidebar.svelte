@@ -2,17 +2,12 @@
   import { onMount } from "svelte";
   import Card from "@smui/card";
   import Tab, { Label } from "@smui/tab";
-  import ColorPicker from "./ColorPicker.svelte";
+  import ColorMapper from "./ColorMapper.svelte";
   import SyntaxMapping from "./SyntaxMapping.svelte";
-  import { colorKeys } from "../Types.svelte";
-  import { colorStore } from "../stores.svelte";
   import TabBar from "@smui/tab-bar";
-  import Button from "@smui/button";
 
   export let showSidebar: boolean;
   let activeTab = "colors"; // Default to colors tab
-  let confirmResetOpen = false;
-  export let onRequestReset: () => void;
 
   function handleResize() {
     if (window.innerWidth >= 1024) {
@@ -43,19 +38,7 @@
       </div>
 
       {#if activeTab === "colors"}
-        <div class="color-pickers">
-          {#each colorKeys as { key, description, label }}
-            <ColorPicker
-              label={`${label} ${description}`}
-              bind:value={$colorStore[key]}
-            />
-          {/each}
-          <div class="reset-wrapper">
-            <Button variant="raised" onclick={() => onRequestReset?.()}>
-              Reset Theme
-            </Button>
-          </div>
-        </div>
+        <ColorMapper />
       {:else if activeTab === "syntax"}
         <SyntaxMapping />
       {/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import Select, { Option } from "@smui/select";
-  import { colorStore, syntaxMapping } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode, syntaxMapping } from "../stores.svelte";
   import { colorKeys } from "../Types.svelte";
   import type { SyntaxToken, Theme } from "../Types.svelte";
 
@@ -20,7 +20,7 @@
   <div class="current-color">
     <div
       class="color-preview current"
-      style="background-color: {$colorStore[selectedColor]};"
+      style="background-color: {($darkMode ? $darkTheme : $lightTheme)[selectedColor]};"
     ></div>
   </div>
 
@@ -31,12 +31,12 @@
     onSMUISelectChange={({ detail }) =>
       updateMapping(detail.value as SyntaxToken)}
   >
-    {#each colorKeys as { key, description, label }}
+    {#each colorKeys as { key }}
       <Option value={key}>
         <div class="color-option">
           <div
             class="color-preview"
-            style="background-color: {$colorStore[key]};"
+            style="background-color: {($darkMode ? $darkTheme : $lightTheme)[key]};"
           ></div>
           <span>{key}</span>
         </div>

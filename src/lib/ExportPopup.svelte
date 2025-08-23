@@ -1,7 +1,7 @@
 <script lang="ts">
   import hljs from "highlight.js/lib/core";
   import json from "highlight.js/lib/languages/json";
-  import { colorStore, darkMode, syntaxMapping } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode, syntaxMapping } from "../stores.svelte";
   import { colorKeys, type ColorConfig } from "../Types.svelte";
   import Button, { Group, Icon, Label } from "@smui/button";
   import {
@@ -27,7 +27,7 @@
 
   function generateJSON() {
     const config: ColorConfig = {
-      colors: $colorStore,
+      colors: $darkMode ? $darkTheme : $lightTheme,
       mappings: {
           comment: $syntaxMapping.comment,
           keyword: $syntaxMapping.keyword,
@@ -112,8 +112,12 @@
           return;
         }
 
-        // Update the color store with imported colors
-        $colorStore = { ...parsedData.colors };
+        // Update the active theme with imported colors
+        if ($darkMode) {
+          $darkTheme = { ...$darkTheme, ...parsedData.colors };
+        } else {
+          $lightTheme = { ...$lightTheme, ...parsedData.colors };
+        }
         
         // Update the syntax mappings if available
         if (parsedData.mappings) {
@@ -129,7 +133,8 @@
             
             // Only update if the key exists in our syntax mapping
             if (syntaxKey in $syntaxMapping) {
-              $syntaxMapping[syntaxKey] = value as keyof typeof $colorStore;
+              // Avoid complex type assertions here; assign safely
+              ($syntaxMapping as any)[syntaxKey] = value as any;
             }
           });
         }
@@ -153,11 +158,11 @@
 
   // Update preview window background color based on theme
   $effect(() => {
-    if (previewWindow && $colorStore) {
+    if (previewWindow) {
       if ($darkMode) {
-        previewWindow.style.backgroundColor = $colorStore.bg0;
+        previewWindow.style.backgroundColor = $darkTheme.bg0;
       } else {
-        previewWindow.style.backgroundColor = $colorStore.fg0;
+        previewWindow.style.backgroundColor = $lightTheme.fg0;
       }
     }
   });
