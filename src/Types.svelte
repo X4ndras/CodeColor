@@ -172,23 +172,42 @@
   export interface ColorConfig {
     colors: Theme;
     mappings: SyntaxMapping;
+    diagnostics: DiagnosticsMapping;
+    statusline: StatuslineMapping;
   }
 
   export interface SyntaxMapping {
-    comment: string;
-    keyword: string;
-    string: string;
-    number: string;
-    variable: string;
-    fn: string;
-    type: string;
-    class: string;
-    namespace: string;
-    parameter: string;
-    operator: string;
-    builtin: string;
-    property: string;
-    special: string;
-    macro: string;
+    comment: keyof Theme;
+    keyword: keyof Theme;
+    string: keyof Theme;
+    number: keyof Theme;
+    variable: keyof Theme;
+    fn: keyof Theme;
+    type: keyof Theme;
+    class: keyof Theme;
+    namespace: keyof Theme;
+    parameter: keyof Theme;
+    operator: keyof Theme;
+    builtin: keyof Theme;
+    property: keyof Theme;
+    special: keyof Theme;
+    macro: keyof Theme;
+  }
+
+  export interface DiagnosticsMapping {
+    error: keyof Theme;
+    warning: keyof Theme;
+    info: keyof Theme;
+    hint: keyof Theme;
+    ok: keyof Theme;
+  }
+
+  export interface StatuslineMapping {
+    normal: keyof Theme;
+    insert: keyof Theme;
+    visual: keyof Theme;
+    replace: keyof Theme;
+    command: keyof Theme;
+    terminal: keyof Theme;
   }
 </script>

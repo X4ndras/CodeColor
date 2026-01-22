@@ -1,5 +1,10 @@
 import { writable } from "svelte/store";
-import type { Theme, SyntaxToken } from "./Types.svelte";
+import type {
+  DiagnosticsMapping,
+  StatuslineMapping,
+  Theme,
+  SyntaxToken,
+} from "./Types.svelte";
 
 const LOCAL_KEY = 'codecolor-state-v2';
 
@@ -23,8 +28,33 @@ const defaultSyntax: Record<SyntaxToken, keyof Theme> = {
   macro: "color9", // Violet/Blue accent
 };
 
+const defaultDiagnostics: DiagnosticsMapping = {
+  error: "color9", // Bright red
+  warning: "color17", // Bright orange/yellow
+  info: "color4", // Blue
+  hint: "color6", // Cyan
+  ok: "color2", // Green
+};
+
+const defaultStatusline: StatuslineMapping = {
+  normal: "color5", // Magenta
+  insert: "color3", // Yellow
+  visual: "color4", // Blue
+  replace: "color1", // Red
+  command: "color6", // Cyan
+  terminal: "color2", // Green
+};
+
 export const syntaxMapping = writable<Record<SyntaxToken, keyof Theme>>({
   ...defaultSyntax,
+});
+
+export const diagnosticsMapping = writable<DiagnosticsMapping>({
+  ...defaultDiagnostics,
+});
+
+export const statuslineMapping = writable<StatuslineMapping>({
+  ...defaultStatusline,
 });
 
 // firefly
@@ -104,6 +134,8 @@ export const lightTheme = writable<Theme>({ ...defaultLight });
 type PersistedState = {
   darkMode: boolean;
   syntaxMapping: Record<SyntaxToken, keyof Theme>;
+  diagnosticsMapping: DiagnosticsMapping;
+  statuslineMapping: StatuslineMapping;
   darkColors: Theme;
   lightColors: Theme;
 };
@@ -130,6 +162,14 @@ if (initial) {
   darkMode.set(initial.darkMode);
   // Merge persisted mapping with defaults to add any new keys (e.g., 'special')
   syntaxMapping.set({ ...defaultSyntax, ...initial.syntaxMapping });
+  diagnosticsMapping.set({
+    ...defaultDiagnostics,
+    ...(initial.diagnosticsMapping ?? {}),
+  });
+  statuslineMapping.set({
+    ...defaultStatusline,
+    ...(initial.statuslineMapping ?? {}),
+  });
   darkTheme.set(initial.darkColors);
   lightTheme.set(initial.lightColors);
 }
@@ -138,11 +178,27 @@ if (initial) {
 let currentState: PersistedState = {
   darkMode: false,
   syntaxMapping: { ...defaultSyntax },
+  diagnosticsMapping: { ...defaultDiagnostics },
+  statuslineMapping: { ...defaultStatusline },
   darkColors: { ...defaultDark },
   lightColors: { ...defaultLight },
 };
 
-if (initial) currentState = initial;
+if (initial) {
+  currentState = {
+    ...currentState,
+    ...initial,
+    syntaxMapping: { ...defaultSyntax, ...initial.syntaxMapping },
+    diagnosticsMapping: {
+      ...defaultDiagnostics,
+      ...(initial.diagnosticsMapping ?? {}),
+    },
+    statuslineMapping: {
+      ...defaultStatusline,
+      ...(initial.statuslineMapping ?? {}),
+    },
+  };
+}
 
 darkMode.subscribe((v) => {
   currentState.darkMode = v;
@@ -150,6 +206,16 @@ darkMode.subscribe((v) => {
 });
 syntaxMapping.subscribe((v) => {
   currentState.syntaxMapping = v as any;
+  persist(currentState);
+});
+
+diagnosticsMapping.subscribe((v) => {
+  currentState.diagnosticsMapping = v;
+  persist(currentState);
+});
+
+statuslineMapping.subscribe((v) => {
+  currentState.statuslineMapping = v;
   persist(currentState);
 });
 darkTheme.subscribe((v) => {
@@ -166,6 +232,8 @@ export function resetAll() {
   // Reset to defaults
   darkMode.set(false);
   syntaxMapping.set({ ...defaultSyntax });
+  diagnosticsMapping.set({ ...defaultDiagnostics });
+  statuslineMapping.set({ ...defaultStatusline });
   darkTheme.set({ ...defaultDark });
   lightTheme.set({ ...defaultLight });
 }
@@ -180,6 +248,8 @@ export function resetCurrentTheme(isDark: boolean) {
 
 export function resetSyntaxDefaults() {
   syntaxMapping.set({ ...defaultSyntax });
+  diagnosticsMapping.set({ ...defaultDiagnostics });
+  statuslineMapping.set({ ...defaultStatusline });
 }
 /*
 // one dark pro

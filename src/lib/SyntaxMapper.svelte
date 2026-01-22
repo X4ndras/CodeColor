@@ -1,18 +1,20 @@
 <script lang="ts">
   import Select, { Option } from "@smui/select";
-  import { darkTheme, lightTheme, darkMode, syntaxMapping } from "../stores.svelte";
+  import { darkTheme, lightTheme, darkMode } from "../stores.svelte";
   import { colorKeys } from "../Types.svelte";
-  import type { SyntaxToken, Theme } from "../Types.svelte";
+  import type { Theme } from "../Types.svelte";
+  import type { Writable } from "svelte/store";
 
-  // Accept the syntax token as a prop
-  export let token: SyntaxToken;
+  // Accept the token and mapping store as props
+  export let token: string;
+  export let mappingStore: Writable<Record<string, keyof Theme>>;
 
-  // Get the current mapping for this token from the syntaxMapping store
-  $: selectedColor = $syntaxMapping[token];
+  // Get the current mapping for this token from the provided store
+  $: selectedColor = $mappingStore[token];
 
   // This will update the mapping when the dropdown changes
   function updateMapping(newColorKey: string) {
-    $syntaxMapping[token] = newColorKey as keyof Theme;
+    $mappingStore[token] = newColorKey as keyof Theme;
   }
 </script>
 
@@ -29,7 +31,7 @@
     variant="outlined"
     value={selectedColor}
     onSMUISelectChange={({ detail }) =>
-      updateMapping(detail.value as SyntaxToken)}
+      updateMapping(detail.value as string)}
   >
     {#each colorKeys as { key }}
       <Option value={key}>

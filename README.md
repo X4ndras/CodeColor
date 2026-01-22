@@ -53,6 +53,21 @@ Themes are exported as JSON with this structure:
     "variable": "color4",
     "fn": "color3",
     ...
+  },
+  "diagnostics": {
+    "error": "color9",
+    "warning": "color17",
+    "info": "color4",
+    "hint": "color6",
+    "ok": "color2"
+  },
+  "statusline": {
+    "normal": "color5",
+    "insert": "color3",
+    "visual": "color4",
+    "replace": "color1",
+    "command": "color6",
+    "terminal": "color2"
   }
 }
 ```

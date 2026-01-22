@@ -1,7 +1,14 @@
 <script lang="ts">
   import hljs from "highlight.js/lib/core";
   import json from "highlight.js/lib/languages/json";
-  import { darkTheme, lightTheme, darkMode, syntaxMapping } from "../stores.svelte";
+  import {
+    darkTheme,
+    lightTheme,
+    darkMode,
+    syntaxMapping,
+    diagnosticsMapping,
+    statuslineMapping,
+  } from "../stores.svelte";
   import { colorKeys, type ColorConfig } from "../Types.svelte";
   import Button, { Group, Icon, Label } from "@smui/button";
   import {
@@ -29,22 +36,37 @@
     const config: ColorConfig = {
       colors: $darkMode ? $darkTheme : $lightTheme,
       mappings: {
-          comment: $syntaxMapping.comment,
-          keyword: $syntaxMapping.keyword,
-          string: $syntaxMapping.string,
-          number: $syntaxMapping.number,
-          variable: $syntaxMapping.variable,
-          fn: $syntaxMapping.fn,
-          type: $syntaxMapping.type,
-          class: $syntaxMapping.class,
-          namespace: $syntaxMapping.namespace,
-          parameter: $syntaxMapping.parameter,
-          operator: $syntaxMapping.operator,
-          builtin: $syntaxMapping.builtin,
-          property: $syntaxMapping.property,
-          special: $syntaxMapping.special,
-          macro: $syntaxMapping.macro,
-      }
+        comment: $syntaxMapping.comment,
+        keyword: $syntaxMapping.keyword,
+        string: $syntaxMapping.string,
+        number: $syntaxMapping.number,
+        variable: $syntaxMapping.variable,
+        fn: $syntaxMapping.fn,
+        type: $syntaxMapping.type,
+        class: $syntaxMapping.class,
+        namespace: $syntaxMapping.namespace,
+        parameter: $syntaxMapping.parameter,
+        operator: $syntaxMapping.operator,
+        builtin: $syntaxMapping.builtin,
+        property: $syntaxMapping.property,
+        special: $syntaxMapping.special,
+        macro: $syntaxMapping.macro,
+      },
+      diagnostics: {
+        error: $diagnosticsMapping.error,
+        warning: $diagnosticsMapping.warning,
+        info: $diagnosticsMapping.info,
+        hint: $diagnosticsMapping.hint,
+        ok: $diagnosticsMapping.ok,
+      },
+      statusline: {
+        normal: $statuslineMapping.normal,
+        insert: $statuslineMapping.insert,
+        visual: $statuslineMapping.visual,
+        replace: $statuslineMapping.replace,
+        command: $statuslineMapping.command,
+        terminal: $statuslineMapping.terminal,
+      },
     };
     const jsonString = JSON.stringify(config, null, 2);
     rawExportContent = jsonString; // Store the raw content
@@ -126,10 +148,30 @@
         if (parsedData.mappings) {
           Object.entries(parsedData.mappings).forEach(([key, value]) => {
             const syntaxKey = key as keyof typeof $syntaxMapping;
-            
+
             // Only update if the key exists in our syntax mapping
             if (syntaxKey in $syntaxMapping) {
               ($syntaxMapping as any)[syntaxKey] = value as any;
+            }
+          });
+        }
+
+        if (parsedData.diagnostics) {
+          Object.entries(parsedData.diagnostics).forEach(([key, value]) => {
+            const diagnosticKey = key as keyof typeof $diagnosticsMapping;
+
+            if (diagnosticKey in $diagnosticsMapping) {
+              ($diagnosticsMapping as any)[diagnosticKey] = value as any;
+            }
+          });
+        }
+
+        if (parsedData.statusline) {
+          Object.entries(parsedData.statusline).forEach(([key, value]) => {
+            const statuslineKey = key as keyof typeof $statuslineMapping;
+
+            if (statuslineKey in $statuslineMapping) {
+              ($statuslineMapping as any)[statuslineKey] = value as any;
             }
           });
         }
