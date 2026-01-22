@@ -34,13 +34,16 @@
           string: $syntaxMapping.string,
           number: $syntaxMapping.number,
           variable: $syntaxMapping.variable,
-          fn: $syntaxMapping.function,
+          fn: $syntaxMapping.fn,
           type: $syntaxMapping.type,
           class: $syntaxMapping.class,
+          namespace: $syntaxMapping.namespace,
           parameter: $syntaxMapping.parameter,
           operator: $syntaxMapping.operator,
           builtin: $syntaxMapping.builtin,
           property: $syntaxMapping.property,
+          special: $syntaxMapping.special,
+          macro: $syntaxMapping.macro,
       }
     };
     const jsonString = JSON.stringify(config, null, 2);
@@ -121,19 +124,11 @@
         
         // Update the syntax mappings if available
         if (parsedData.mappings) {
-          // Temporary mapping to convert from ColorConfig.mappings to expected format
-          const mappingKeys: Record<string, keyof typeof $syntaxMapping> = {
-            fn: 'function',
-            // Add other keys if they differ
-          };
-          
           Object.entries(parsedData.mappings).forEach(([key, value]) => {
-            // Check if this key needs to be mapped
-            const syntaxKey = mappingKeys[key] || key as keyof typeof $syntaxMapping;
+            const syntaxKey = key as keyof typeof $syntaxMapping;
             
             // Only update if the key exists in our syntax mapping
             if (syntaxKey in $syntaxMapping) {
-              // Avoid complex type assertions here; assign safely
               ($syntaxMapping as any)[syntaxKey] = value as any;
             }
           });

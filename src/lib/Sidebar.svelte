@@ -4,6 +4,7 @@
   import Tab, { Label } from "@smui/tab";
   import ColorMapper from "./ColorMapper.svelte";
   import SyntaxMapping from "./SyntaxMapping.svelte";
+  import ContrastChecker from "./ContrastChecker.svelte";
   import TabBar from "@smui/tab-bar";
 
   export let showSidebar: boolean;
@@ -28,7 +29,7 @@
   <div class="card-container">
     <Card>
       <div class="tab-container">
-        <TabBar tabs={["colors", "syntax"]} bind:active={activeTab}>
+        <TabBar tabs={["colors", "syntax", "contrast"]} bind:active={activeTab}>
           {#snippet tab(tab)}
             <Tab {tab}>
               <Label>{tab.charAt(0).toUpperCase() + tab.slice(1)}</Label>
@@ -41,6 +42,8 @@
         <ColorMapper />
       {:else if activeTab === "syntax"}
         <SyntaxMapping />
+      {:else if activeTab === "contrast"}
+        <ContrastChecker />
       {/if}
     </Card>
   </div>
@@ -78,14 +81,6 @@
 
   .sidebar-hidden {
     transform: translateX(-100%);
-  }
-
-  .color-pickers {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
   }
 
   @media (min-width: 1024px) {

@@ -120,7 +120,7 @@
   </div>
 
   <div class="layout">
-    <Sidebar bind:showSidebar onRequestReset={() => (confirmResetOpen = true)} />
+    <Sidebar bind:showSidebar />
     <div class="preview-section">
       <div class="tabs-wrapper">
         <Card>

@@ -180,7 +180,7 @@
     string: string;
     number: string;
     variable: string;
-    function: string;
+    fn: string;
     type: string;
     class: string;
     namespace: string;

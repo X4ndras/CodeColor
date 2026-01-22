@@ -11,7 +11,7 @@ const defaultSyntax: Record<SyntaxToken, keyof Theme> = {
   string: "color2", // Green
   number: "color11", // Bright Yellow
   variable: "color1", // Red
-  function: "color4", // Blue
+  fn: "color4", // Blue
   type: "color9", // Yellow
   class: "color3", // Yellow
   namespace: "color3", // Bright Yellow

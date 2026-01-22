@@ -10,7 +10,7 @@
     string: "String literals",
     number: "Numeric literals",
     variable: "Variable names",
-    function: "Function names and calls",
+    fn: "Function names and calls",
     type: "Types and interfaces",
     class: "Class names and definitions",
     namespace: "Namespace names",

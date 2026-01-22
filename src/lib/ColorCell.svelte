@@ -3,10 +3,10 @@
   import tinycolor from "tinycolor2";
   import Snackbar, { Actions, Label } from "@smui/snackbar";
   import IconButton, { Icon } from "@smui/icon-button";
+  import { formatColor, type ColorMode } from "./colorUtils";
   
   export let color: string;
   export let label: string;
-  // Replace event dispatcher with callback prop
   export let onColorChange: (newColor: string) => void = () => {};
 
   let snackbarWithClose: Snackbar;
@@ -14,11 +14,20 @@
   let shades: Array<{ hex: string; isBase: boolean }> = [];
   let baseColor: string = color;
   let copiedColor: string = color;
+  let colorMode: ColorMode = 'hsl';
+
+  // Cycle through color modes
+  const modes: ColorMode[] = ['hex', 'rgb', 'hsl', 'cmyk'];
+  
+  function cycleColorMode() {
+    const currentIndex = modes.indexOf(colorMode);
+    colorMode = modes[(currentIndex + 1) % modes.length];
+  }
 
   function copyColor(hex: string) {
-    copiedColor = hex;
+    copiedColor = formatColor(hex, colorMode);
     snackbarWithClose.close();
-    navigator.clipboard.writeText(hex).catch((err) => {
+    navigator.clipboard.writeText(copiedColor).catch((err) => {
       console.error("Failed to copy color:", err);
     });
     snackbarWithClose.forceOpen();
@@ -93,18 +102,24 @@
     // Use callback instead of dispatch
     onColorChange(shade);
   }
+
+  $: displayColor = formatColor(color, colorMode);
 </script>
 
 <div
   class="color-cell {tinycolor(color).isLight() ? 'light' : 'dark'}"
   style="background-color: {color}"
 >
-  {label}
-  {color}
+  <span class="color-label">{label}</span>
+  <button class="color-value" on:click={cycleColorMode} title="Click to change color format">
+    {displayColor}
+  </button>
+  <span class="color-mode-badge">{colorMode.toUpperCase()}</span>
+  
   <div class="button-container">
     <button
       on:click={() => copyColor(color)}
-      title="Copy color"
+      title="Copy color ({colorMode})"
       aria-label="copy"
     >
       <svg viewBox="0 0 24 24" width="16" height="16">
@@ -134,7 +149,7 @@
           {#if shade.isBase}
             <div class="base-indicator"></div>
           {/if}
-          <span class="shade-label">{shade.hex}</span>
+          <span class="shade-label">{formatColor(shade.hex, colorMode)}</span>
         </button>
       {/each}
     </div>
@@ -158,16 +173,52 @@
     height: 8rem;
     border-radius: 4px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     margin-top: 0.5rem;
     margin-left: 0.5rem;
     margin-right: 0.5rem;
+    gap: 0.25rem;
 
     font-family: "JetBrains Mono", monospace;
     font-size: 0.8rem;
 
     position: relative;
+  }
+
+  .color-label {
+    font-weight: 600;
+  }
+
+  .color-value {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .color-cell.light .color-value {
+    color: #000;
+  }
+
+  .color-cell.dark .color-value {
+    color: #fff;
+  }
+
+  .color-value:hover {
+    background: rgba(128, 128, 128, 0.3);
+  }
+
+  .color-mode-badge {
+    font-size: 0.55rem;
+    font-weight: 600;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
   }
 
   .color-cell.light {
@@ -231,7 +282,6 @@
     padding: 4px;
     background: rgba(0, 0, 0, 0.8);
     border-radius: 2px;
-    /*border-radius: 0 0 4px 4px;*/
     max-width: 100%;
   }
 
@@ -258,7 +308,7 @@
     color: white;
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     opacity: 0;
     transition: opacity 0.2s;
     white-space: nowrap;
